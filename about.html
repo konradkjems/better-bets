@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Om Os - Better Bets</title>
+    <link rel="stylesheet" href="/src/style.css">
+    <link rel="icon" type="image/svg+xml" href="/src/assets/Better Bets Icon.svg">
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <a href="/" class="flex items-center">
+                        <img src="/src/assets/Better Bets.svg" alt="Better Bets Logo" class="h-8">
+                    </a>
+                    <div class="hidden md:flex items-center ml-10 space-x-8">
+                        <a href="/about.html" class="text-blue-600 font-medium">Om Os</a>
+                        <a href="/pricing.html" class="text-gray-600 hover:text-gray-900">Priser</a>
+                        <a href="/contact.html" class="text-gray-600 hover:text-gray-900">Kontakt</a>
+                    </div>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobileMenuButton" class="text-gray-600 hover:text-gray-900 focus:outline-none">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="mobileMenu" class="hidden md:hidden">
+            <div class="px-2 pt-2 pb-3 space-y-1">
+                <a href="/about.html" class="block px-3 py-2 text-blue-600 bg-gray-50 font-medium">Om Os</a>
+                <a href="/pricing.html" class="block px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50">Priser</a>
+                <a href="/contact.html" class="block px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50">Kontakt</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-3xl mx-auto">
+            <h1 class="text-4xl font-bold text-gray-800 mb-8">Om Better Bets</h1>
+            
+            <div class="prose prose-lg">
+                <p class="text-lg text-gray-600 mb-6">
+                    Better Bets er din pålidelige partner i sportsbetting. Vi hjælper dig med at finde og udnytte arbitrage muligheder på tværs af forskellige bookmakere, så du kan opnå sikre gevinster uanset kampens udfald.
+                </p>
+
+                <h2 class="text-2xl font-bold text-gray-800 mt-8 mb-4">Vores Mission</h2>
+                <p class="text-lg text-gray-600 mb-6">
+                    Vi stræber efter at gøre arbitrage betting tilgængeligt for alle ved at tilbyde brugervenlige værktøjer og pålidelige beregninger. Vores platform er designet til både nybegyndere og erfarne bettere.
+                </p>
+
+                <h2 class="text-2xl font-bold text-gray-800 mt-8 mb-4">Hvorfor Vælge Os?</h2>
+                <ul class="list-disc list-inside text-lg text-gray-600 mb-6 space-y-2">
+                    <li>Realtids odds-sammenligning</li>
+                    <li>Automatiske arbitrage-beregninger</li>
+                    <li>Support for mange forskellige bookmakere</li>
+                    <li>Brugervenligt interface</li>
+                    <li>Dedikeret kundesupport</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile menu script -->
+    <script>
+        const mobileMenuButton = document.getElementById('mobileMenuButton');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        mobileMenuButton?.addEventListener('click', () => {
+            mobileMenu?.classList.toggle('hidden');
+        });
+    </script>
+</body>
+</html> 
