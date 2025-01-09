@@ -43,3 +43,6 @@ if (!process.env.VERCEL) {
 
 // Export for Vercel
 export default app;
+
+
+// https://better-bets-frontend.vercel.app/
