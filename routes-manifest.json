@@ -5,20 +5,20 @@
     "/": {
       "file": "index.html"
     },
-    "/login/": {
-      "file": "login/index.html"
+    "/login.html": {
+      "file": "login.html"
     },
-    "/register/": {
-      "file": "register/index.html"
+    "/register.html": {
+      "file": "register.html"
     },
-    "/about/": {
-      "file": "about/index.html"
+    "/about.html": {
+      "file": "about.html"
     },
-    "/pricing/": {
-      "file": "pricing/index.html"
+    "/pricing.html": {
+      "file": "pricing.html"
     },
-    "/contact/": {
-      "file": "contact/index.html"
+    "/contact.html": {
+      "file": "contact.html"
     }
   },
   "dynamicRoutes": {}
