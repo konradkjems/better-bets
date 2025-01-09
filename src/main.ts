@@ -9,6 +9,12 @@ interface BookmakerInfo {
     preferLoss?: boolean;  // For bookmakere hvor vi foretrækker at tabe
     avoidWin?: boolean;    // For bookmakere hvor vi vil undgå at vinde
     isActive: boolean;     // Om bookmakeren er aktiv i beregningen
+    bonusType?: 'freebet' | 'matchingBonus' | 'none';  // Type af bonus
+    bonusAmount?: number;  // Størrelse på bonus (for freebet eller matchingBonus)
+    bonusMinOdds?: number;  // Minimum odds for at bruge bonus
+    qualifyingBetAmount?: number;  // Beløb der skal spilles for at låse bonus op
+    isBonusLocked?: boolean;  // Om bonussen er låst op eller ej
+    usedInBet1?: boolean;  // Om bookmakeren blev brugt i Bet 1
 }
 
 interface TeamNames {
@@ -33,6 +39,13 @@ interface BookmakerOdds {
         draw: number;
         team2: number;
     };
+    favoritType?: 'team1' | 'team2';
+    underdogType?: 'team1' | 'team2';
+    returns?: {
+        team1: number;
+        draw: number;
+        team2: number;
+    };
 }
 
 interface CustomerBookmaker extends BookmakerInfo {
@@ -41,6 +54,9 @@ interface CustomerBookmaker extends BookmakerInfo {
         draw: number;
         team2: number;
     };
+    bet1Balance?: number;  // Saldo fra Bet 1
+    bet1Profit?: number;   // Profit fra Bet 1 (for freebet sider)
+    usedInBet1?: boolean;  // Om siden blev brugt i Bet 1
 }
 
 interface Customer {
@@ -48,6 +64,7 @@ interface Customer {
     name: string;
     bookmakers: CustomerBookmaker[];
     teamNames?: TeamNames;
+    betType: 'qualifying' | 'bonus';  // Tilføj betType til Customer interface
 }
 
 interface ArbitrageResult {
@@ -75,26 +92,27 @@ interface ArbitrageResult {
 }
 
 const BOOKMAKERS: BookmakerInfo[] = [
-    { name: 'Unibet', fixedStake: 2000, hasBonus: true, actualCost: 1000, minOdds: 1.4, isActive: true },
-    { name: 'Bet365', fixedStake: 1000, hasBonus: false, actualCost: 1000, minOdds: 1.2, isActive: true },
-    { name: 'LeoVegas', fixedStake: 500, hasBonus: false, actualCost: 500, minOdds: 1.8, isActive: true },
-    { name: 'ComeOn', fixedStake: 2000, hasBonus: true, actualCost: 1000, minOdds: 1.8, preferLoss: true, isActive: true },
-    { name: 'NordicBet', fixedStake: 500, hasBonus: false, actualCost: 500, minOdds: 1.8, isActive: true },
-    { name: 'Betsson', fixedStake: 500, hasBonus: false, actualCost: 500, minOdds: 1.8, isActive: true },
-    { name: '888sport', fixedStake: 600, hasBonus: true, actualCost: 500, minOdds: 1.8, isActive: true },
-    { name: 'Bet25', fixedStake: 250, hasBonus: false, actualCost: 250, minOdds: 1.5, isActive: true },
-    { name: 'Expekt', fixedStake: 600, hasBonus: false, actualCost: 600, minOdds: 1.8, isActive: true },
-    { name: 'Cashpoint', fixedStake: 500, hasBonus: false, actualCost: 500, minOdds: 1.8, isActive: true },
-    { name: 'Jackpotbet', fixedStake: 2000, hasBonus: true, actualCost: 1000, minOdds: 1.5, isActive: true },
-    { name: 'Tipwin', fixedStake: 1600, hasBonus: true, actualCost: 800, minOdds: 1.5, avoidWin: true, isActive: true },
-    { name: 'Betano', fixedStake: 2000, hasBonus: true, actualCost: 1000, minOdds: 1.8, isActive: true },
-    { name: 'Mrgreen', fixedStake: 400, hasBonus: true, actualCost: 300, minOdds: 2.0, isActive: true }
+    { name: 'Unibet', fixedStake: 2000, hasBonus: true, actualCost: 1000, minOdds: 1.4, isActive: true, bonusType: 'matchingBonus', bonusAmount: 1000, bonusMinOdds: 1.4, qualifyingBetAmount: 1000, usedInBet1: true },
+    { name: 'Bet365', fixedStake: 1000, hasBonus: false, actualCost: 1000, minOdds: 1.2, isActive: true, bonusType: 'freebet', bonusAmount: 1000, bonusMinOdds: 1.2, qualifyingBetAmount: 1000, usedInBet1: true },
+    { name: 'LeoVegas', fixedStake: 500, hasBonus: false, actualCost: 500, minOdds: 1.8, isActive: true, bonusType: 'freebet', bonusAmount: 500, bonusMinOdds: 1.8, qualifyingBetAmount: 500, usedInBet1: true },
+    { name: 'ComeOn', fixedStake: 2000, hasBonus: true, actualCost: 1000, minOdds: 1.8, preferLoss: true, isActive: true, bonusType: 'matchingBonus', bonusAmount: 1000, bonusMinOdds: 1.8, qualifyingBetAmount: 1000, usedInBet1: true },
+    { name: 'NordicBet', fixedStake: 500, hasBonus: false, actualCost: 500, minOdds: 1.8, isActive: true, bonusType: 'freebet', bonusAmount: 500, bonusMinOdds: 1.8, qualifyingBetAmount: 500, usedInBet1: true },
+    { name: 'Betsson', fixedStake: 500, hasBonus: false, actualCost: 500, minOdds: 1.8, isActive: true, bonusType: 'freebet', bonusAmount: 500, bonusMinOdds: 1.8, qualifyingBetAmount: 500, usedInBet1: true },
+    { name: '888sport', fixedStake: 600, hasBonus: true, actualCost: 500, minOdds: 1.8, isActive: true, bonusType: 'freebet', bonusAmount: 500, bonusMinOdds: 1.8, qualifyingBetAmount: 500, usedInBet1: true },
+    { name: 'Bet25', fixedStake: 250, hasBonus: false, actualCost: 250, minOdds: 1.5, isActive: true, bonusType: 'freebet', bonusAmount: 250, bonusMinOdds: 1.5, qualifyingBetAmount: 250, usedInBet1: true },
+    { name: 'Expekt', fixedStake: 600, hasBonus: false, actualCost: 600, minOdds: 1.8, isActive: true, bonusType: 'freebet', bonusAmount: 600, bonusMinOdds: 1.8, qualifyingBetAmount: 600, usedInBet1: true },
+    { name: 'Cashpoint', fixedStake: 500, hasBonus: false, actualCost: 500, minOdds: 1.8, isActive: true, bonusType: 'freebet', bonusAmount: 500, bonusMinOdds: 1.8, qualifyingBetAmount: 500, usedInBet1: true },
+    { name: 'Jackpotbet', fixedStake: 2000, hasBonus: true, actualCost: 1000, minOdds: 1.5, isActive: true, bonusType: 'matchingBonus', bonusAmount: 1000, bonusMinOdds: 1.5, qualifyingBetAmount: 1000, usedInBet1: true },
+    { name: 'Tipwin', fixedStake: 1600, hasBonus: true, actualCost: 800, minOdds: 1.5, avoidWin: true, isActive: true, bonusType: 'matchingBonus', bonusAmount: 800, bonusMinOdds: 1.5, qualifyingBetAmount: 800, usedInBet1: true },
+    { name: 'Betano', fixedStake: 2000, hasBonus: true, actualCost: 1000, minOdds: 1.8, isActive: true, bonusType: 'matchingBonus', bonusAmount: 1000, bonusMinOdds: 1.8, qualifyingBetAmount: 1000, usedInBet1: true },
+    { name: 'Mrgreen', fixedStake: 400, hasBonus: true, actualCost: 300, minOdds: 2.0, isActive: true, bonusType: 'freebet', bonusAmount: 300, bonusMinOdds: 2.0, qualifyingBetAmount: 300, usedInBet1: true }
 ];
 
 // Global state
 let customers: Customer[] = [];
 let currentCustomerId = '';
 let isFirstCalculation = true;
+let currentBetType: 'qualifying' | 'bonus' = 'qualifying';  // Default til qualifying bets
 
 // Tilføj global variabel til at gemme sidste beregning
 let lastCalculatedResult: ArbitrageResult | null = null;
@@ -117,10 +135,16 @@ function initializeFirstCustomer(): boolean {
     const firstCustomer: Customer = {
         id: 'kunde1',
         name: customerName,
-        bookmakers: BOOKMAKERS.map(bm => ({...bm}))
+        bookmakers: BOOKMAKERS.map(bm => ({...bm})),
+        teamNames: {
+            team1: 'Team 1',
+            team2: 'Team 2'
+        },
+        betType: 'qualifying'  // Start med qualifying bets
     };
     customers = [firstCustomer];
     currentCustomerId = 'kunde1';
+    currentBetType = 'qualifying';
     createCustomerSelector();
     return true;
 }
@@ -141,10 +165,16 @@ function addCustomer() {
     const newCustomer: Customer = {
         id: newId,
         name: customerName,
-        bookmakers: BOOKMAKERS.map(bm => ({...bm}))
+        bookmakers: BOOKMAKERS.map(bm => ({...bm})),
+        teamNames: {
+            team1: 'Team 1',
+            team2: 'Team 2'
+        },
+        betType: 'qualifying'  // Start med qualifying bets
     };
     customers.push(newCustomer);
     currentCustomerId = newId;
+    currentBetType = 'qualifying';
     createCustomerSelector();
     createBookmakerInputs();
 }
@@ -223,7 +253,6 @@ function createCustomerSelector() {
         
         const startButton = document.getElementById('startCalculationButton');
         startButton?.addEventListener('click', () => {
-            // Vis formular til at indtaste kunde- og holdnavne
             container.innerHTML = `
                 <div class="bg-white p-6 rounded-lg shadow-sm">
                     <h2 class="text-xl font-bold mb-4">Ny Beregning</h2>
@@ -275,17 +304,15 @@ function createCustomerSelector() {
                     teamNames: {
                         team1: team1Name,
                         team2: team2Name
-                    }
+                    },
+                    betType: 'qualifying'  // Start med qualifying bets
                 };
                 customers = [firstCustomer];
                 currentCustomerId = 'kunde1';
+                currentBetType = 'qualifying';
 
                 // Opdater visningen
-                container.innerHTML = `
-                    <div class="text-center py-4">
-                        <p class="text-gray-600 mb-4">Indtast odds for hver bookmaker og tryk på "Find Bedste Arbitrage Mulighed" når du er klar</p>
-                    </div>
-                `;
+                createCustomerSelector();  // Dette vil nu vise bet type vælgeren
                 createBookmakerInputs();
             });
         });
@@ -296,17 +323,30 @@ function createCustomerSelector() {
 
     container.innerHTML = `
         <div class="flex flex-col gap-4">
-            <div class="flex items-center gap-4">
-                <select id="customerSelect" class="input-field max-w-xs">
-                    ${customers.map(customer => `
-                        <option value="${customer.id}" ${customer.id === currentCustomerId ? 'selected' : ''}>
-                            ${customer.name}
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <select id="customerSelect" class="input-field max-w-xs">
+                        ${customers.map(customer => `
+                            <option value="${customer.id}" ${customer.id === currentCustomerId ? 'selected' : ''}>
+                                ${customer.name}
+                            </option>
+                        `).join('')}
+                    </select>
+                    <button id="addCustomerButton" class="btn-secondary">
+                        Tilføj ny kunde
+                    </button>
+                </div>
+                <div class="flex items-center gap-2">
+                    <label class="text-sm font-medium text-gray-700">Bet Type:</label>
+                    <select id="betTypeSelect" class="input-field">
+                        <option value="qualifying" ${currentBetType === 'qualifying' ? 'selected' : ''}>
+                            Bet 1 (Kvalificerende)
                         </option>
-                    `).join('')}
-                </select>
-                <button id="addCustomerButton" class="btn-secondary">
-                    Tilføj ny kunde
-                </button>
+                        <option value="bonus" ${currentBetType === 'bonus' ? 'selected' : ''}>
+                            Bet 2 (Bonus og Freebts)
+                        </option>
+                    </select>
+                </div>
             </div>
             <div class="grid grid-cols-2 gap-4">
                 <div>
@@ -335,6 +375,22 @@ function createCustomerSelector() {
     const select = document.getElementById('customerSelect') as HTMLSelectElement;
     select?.addEventListener('change', (e) => {
         switchCustomer((e.target as HTMLSelectElement).value);
+    });
+
+    const betTypeSelect = document.getElementById('betTypeSelect') as HTMLSelectElement;
+    betTypeSelect?.addEventListener('change', (e) => {
+        const newBetType = (e.target as HTMLSelectElement).value as 'qualifying' | 'bonus';
+        currentBetType = newBetType;
+        const customer = getCurrentCustomer();
+        if (customer) {
+            customer.betType = newBetType;
+            // Genopbyg UI med den nye bet type
+            createBookmakerInputs();
+            
+            // Skjul resultater når der skiftes bet type
+            const results = document.getElementById('results');
+            if (results) results.classList.add('hidden');
+        }
     });
 
     const addButton = document.getElementById('addCustomerButton');
@@ -368,31 +424,43 @@ export function generateBookmakerId(bookmakerName: string): string {
 }
 
 function calculateArbitrage(oddsData: BookmakerOdds[]): ArbitrageResult {
+    const customer = getCurrentCustomer();
+    const isQualifyingBet = customer.betType === 'qualifying';
+
     // Beregn potentielle returns for hver bookmaker for hvert udfald
     const bookmakerReturns = oddsData.map(bm => {
-        // Find det laveste odds (favorit) for denne bookmaker, men kun for hold 1 og hold 2
+        const bookmakerInfo = customer.bookmakers.find(b => b.name === bm.name);
+        
+        // For kvalificerende bets vil vi minimere tab
+        // For bonus bets vil vi maksimere gevinst på freebets
+        const calculateReturn = (odds: number, stake: number) => {
+            if (!isQualifyingBet && bookmakerInfo?.bonusType === 'freebet') {
+                return (odds - 1) * stake; // Kun gevinst, ikke indsats tilbage for freebets
+            }
+            return odds * stake; // Normal beregning for kvalificerende bets
+        };
+
+        // Find det laveste odds (favorit) for denne bookmaker
         const team1Odds = bm.team1 || Infinity;
         const team2Odds = bm.team2 || Infinity;
-        
-        // Bestem favorit og underdog (kun mellem hold 1 og 2)
-        const favoritType = team1Odds <= team2Odds ? 'team1' : 'team2';
-        const underdogType = team1Odds <= team2Odds ? 'team2' : 'team1';
+        const favoritType = team1Odds <= team2Odds ? 'team1' as const : 'team2' as const;
+        const underdogType = team1Odds <= team2Odds ? 'team2' as const : 'team1' as const;
 
         return {
             ...bm,
             favoritType,
             underdogType,
             returns: {
-                team1: bm.team1 * bm.fixedStake,
-                draw: bm.draw * bm.fixedStake,
-                team2: bm.team2 * bm.fixedStake
+                team1: calculateReturn(bm.team1, bm.fixedStake),
+                draw: calculateReturn(bm.draw, bm.fixedStake),
+                team2: calculateReturn(bm.team2, bm.fixedStake)
             }
         };
     });
 
     // Find target return (gennemsnit af alle mulige returns)
     const totalPossibleReturn = bookmakerReturns.reduce((sum, bm) => 
-        sum + bm.returns.team1 + bm.returns.draw + bm.returns.team2, 0);
+        sum + (bm.returns?.team1 || 0) + (bm.returns?.draw || 0) + (bm.returns?.team2 || 0), 0);
     const targetReturnPerOutcome = totalPossibleReturn / 3;
 
     let bestDistribution = {
@@ -404,63 +472,93 @@ function calculateArbitrage(oddsData: BookmakerOdds[]): ArbitrageResult {
 
     // Funktion til at evaluere en distribution
     const evaluateDistribution = (team1: BookmakerOdds[], draw: BookmakerOdds[], team2: BookmakerOdds[]): number => {
-        const team1Return = team1.reduce((sum, bm) => sum + bm.team1 * bm.fixedStake, 0);
-        const drawReturn = draw.reduce((sum, bm) => sum + bm.draw * bm.fixedStake, 0);
-        const team2Return = team2.reduce((sum, bm) => sum + bm.team2 * bm.fixedStake, 0);
+        const calculateReturnForBet = (bm: BookmakerOdds, odds: number) => {
+            const bookmakerInfo = customer.bookmakers.find(b => b.name === bm.name);
+            if (!isQualifyingBet && bookmakerInfo?.bonusType === 'freebet') {
+                return (odds - 1) * bm.fixedStake;
+            }
+            return odds * bm.fixedStake;
+        };
+
+        const team1Return = team1.reduce((sum, bm) => sum + calculateReturnForBet(bm, bm.team1), 0);
+        const drawReturn = draw.reduce((sum, bm) => sum + calculateReturnForBet(bm, bm.draw), 0);
+        const team2Return = team2.reduce((sum, bm) => sum + calculateReturnForBet(bm, bm.team2), 0);
 
         // Beregn afvigelse fra target
-        const baseDeviation = Math.max(
-            Math.abs(team1Return - drawReturn),
-            Math.abs(team1Return - team2Return),
-            Math.abs(drawReturn - team2Return)
-        );
+        const maxReturn = Math.max(team1Return, drawReturn, team2Return);
+        const minReturn = Math.min(team1Return, drawReturn, team2Return);
+        const avgReturn = (team1Return + drawReturn + team2Return) / 3;
 
-        // Straf for uønskede placeringer
+        // Straf større afvigelser hårdere ved at kvadrere forskellen
+        const baseDeviation = Math.pow(maxReturn - minReturn, 2) + 
+                            Math.pow(Math.abs(team1Return - avgReturn), 2) +
+                            Math.pow(Math.abs(drawReturn - avgReturn), 2) +
+                            Math.pow(Math.abs(team2Return - avgReturn), 2);
+
         let penalty = 0;
 
-        // Tjek ComeOn placering
+        // Specialregler for kvalificerende bets
+        if (isQualifyingBet) {
+            [...team1, ...draw, ...team2].forEach(bm => {
+                const bookmakerInfo = customer.bookmakers.find(b => b.name === bm.name);
+                
+                // Straf hvis vi bruger en bookmaker uden bonus i kvalificerende fase
+                if (!bookmakerInfo?.bonusType || bookmakerInfo.bonusType === 'none') {
+                    penalty += 5000;
+                }
+
+                // Tjek om odds er over minimum for bonus
+                if (bookmakerInfo?.bonusMinOdds) {
+                    const placedOdds = bm.betType === 'team1' ? bm.team1 :
+                                     bm.betType === 'draw' ? bm.draw :
+                                     bm.team2;
+                    if (placedOdds < bookmakerInfo.bonusMinOdds) {
+                        penalty += 10000; // Stor straf hvis odds er under minimum for bonus
+                    }
+                }
+            });
+        }
+
+        // Specialregler for bonus bets (freebets)
+        if (!isQualifyingBet) {
+            [...team1, ...draw, ...team2].forEach(bm => {
+                const bookmakerInfo = customer.bookmakers.find(b => b.name === bm.name);
+                
+                // For freebets vil vi gerne have højere odds for at maksimere gevinst
+                // men stadig holde det balanceret
+                if (bookmakerInfo?.bonusType === 'freebet') {
+                    const placedOdds = bm.betType === 'team1' ? bm.team1 :
+                                     bm.betType === 'draw' ? bm.draw :
+                                     bm.team2;
+                    // Mindre aggressiv bonus for højere odds
+                    penalty -= (placedOdds - bookmakerInfo.minOdds) * 100;
+                }
+
+                // Straf for meget ubalancerede returns i Bet 2
+                const returnSpread = maxReturn - minReturn;
+                if (returnSpread > avgReturn * 0.1) { // Hvis spredningen er mere end 10% af gennemsnittet
+                    penalty += Math.pow(returnSpread, 2);
+                }
+            });
+        }
+
+        // Generelle regler for alle typer bets
         const comeOnBet = [...team1, ...draw, ...team2].find(bm => bm.name === 'ComeOn');
         if (comeOnBet) {
             const comeOnData = bookmakerReturns.find(bm => bm.name === 'ComeOn');
             if (comeOnData) {
-                // Hvis ComeOn er placeret på favoritten eller uafgjort, giv straf
                 const isOnFavorit = comeOnBet.betType === comeOnData.favoritType;
                 const isOnDraw = comeOnBet.betType === 'draw';
-                
                 if (isOnFavorit || isOnDraw) {
-                    penalty += 50000; // Meget høj straf for at sikre at reglen overholdes
+                    penalty += 50000;
                 }
             }
         }
 
-        // Tjek Tipwin placering
         const tipwinBet = [...team1, ...draw, ...team2].find(bm => bm.name === 'Tipwin');
-        if (tipwinBet) {
-            // Hvis Tipwin ikke er placeret på uafgjort, giv en meget høj straf
-            if (tipwinBet.betType !== 'draw') {
-                penalty += 50000; // Meget høj straf for at sikre at Tipwin altid placeres på uafgjort
-            }
+        if (tipwinBet && tipwinBet.betType !== 'draw') {
+            penalty += 50000;
         }
-
-        // Straf hvis vi vinder på en bookmaker der foretrækker tab
-        [...team1, ...draw, ...team2].forEach(bm => {
-            if (bm.preferLoss) {
-                const potentialWin = bm.betType === 'team1' ? team1Return :
-                                   bm.betType === 'draw' ? drawReturn :
-                                   team2Return;
-                if (potentialWin === Math.max(team1Return, drawReturn, team2Return)) {
-                    penalty += 10000; // Stor straf for at vinde på preferLoss bookmakere
-                }
-            }
-            if (bm.avoidWin) {
-                const potentialWin = bm.betType === 'team1' ? team1Return :
-                                   bm.betType === 'draw' ? drawReturn :
-                                   team2Return;
-                if (potentialWin === Math.max(team1Return, drawReturn, team2Return)) {
-                    penalty += 5000; // Mindre straf for at vinde på avoidWin bookmakere
-                }
-            }
-        });
 
         return baseDeviation + penalty;
     };
@@ -651,10 +749,6 @@ function updateUI(result: ArbitrageResult): void {
     // Generer tabel med alle bookmakere
     let tableHTML = '';
     result.allBookmakers.forEach((bm: ArbitrageResult['allBookmakers'][0]) => {
-        const selectedOdds = bm.betType === 'team1' ? bm.team1Odds : 
-                           bm.betType === 'draw' ? bm.drawOdds : 
-                           bm.team2Odds;
-        
         tableHTML += `
             <tr class="hover:bg-gray-50 transition-colors duration-150">
                 <td class="px-4 py-3">
@@ -746,13 +840,6 @@ function updateUI(result: ArbitrageResult): void {
     `;
 }
 
-// Opdater type definition for odds
-type OddsValues = {
-    team1: string | number;
-    draw: string | number;
-    team2: string | number;
-};
-
 // Type guard for at tjekke om et objekt er en CustomerBookmaker
 function isCustomerBookmaker(bookmaker: BookmakerInfo | CustomerBookmaker): bookmaker is CustomerBookmaker {
     return 'odds' in bookmaker;
@@ -764,8 +851,11 @@ function createBookmakerInputs(): void {
 
     container.innerHTML = '';
 
-    // Hvis der ikke er nogen kunde endnu, vis standard bookmakere uden værdier
-    const bookmakers = customers.length === 0 ? BOOKMAKERS : getCurrentCustomer().bookmakers;
+    const customer = getCurrentCustomer();
+    if (!customer) return;  // Sikr at vi har en kunde
+
+    const isBet2 = customer.betType === 'bonus';
+    const bookmakers = customer.bookmakers;
 
     bookmakers.forEach(bookmaker => {
         const bookmakerId = generateBookmakerId(bookmaker.name);
@@ -773,7 +863,7 @@ function createBookmakerInputs(): void {
         div.className = 'bookmaker-card';
 
         // Brug type guard til at bestemme odds
-        const odds = isCustomerBookmaker(bookmaker) && bookmaker.odds ? bookmaker.odds : { team1: 0, draw: 0, team2: 0 };
+        const odds = bookmaker.odds || { team1: 0, draw: 0, team2: 0 };
 
         div.innerHTML = `
             <div class="bookmaker-header">
@@ -786,11 +876,59 @@ function createBookmakerInputs(): void {
                         </label>
                     </div>
                     <span class="bookmaker-info">Min. odds: ${bookmaker.minOdds} | Indsats: ${bookmaker.fixedStake} DKK</span>
-                    ${bookmaker.hasBonus ? 
-                        `<span class="bookmaker-info text-green-600 block">
-                            Bonus: Koster ${bookmaker.actualCost} DKK
-                        </span>` : 
-                        ''}
+                    ${bookmaker.bonusType !== 'none' ? 
+                        `<div class="bookmaker-bonus mt-1">
+                            <div class="flex items-center gap-2">
+                                <span class="inline-flex items-center px-2 py-1 rounded-md text-sm ${
+                                    bookmaker.bonusType === 'freebet' ? 'bg-green-100 text-green-800' : 
+                                    'bg-blue-100 text-blue-800'
+                                }">
+                                    ${bookmaker.bonusType === 'freebet' ? 'Freebet' : 'Matching Bonus'}: 
+                                    ${bookmaker.bonusAmount} DKK
+                                    ${bookmaker.isBonusLocked ? '🔒' : '✓'}
+                                </span>
+                                ${isBet2 ? `
+                                    <label class="flex items-center gap-1">
+                                        <input type="checkbox" 
+                                               id="${bookmakerId}-used-in-bet1"
+                                               class="form-checkbox h-4 w-4 text-blue-600"
+                                               ${bookmaker.usedInBet1 ? 'checked' : ''}>
+                                        <span class="text-sm text-gray-600">Brugt i Bet 1</span>
+                                    </label>
+                                ` : ''}
+                            </div>
+                            <span class="text-xs text-gray-600 block">
+                                Kræver ${bookmaker.qualifyingBetAmount} DKK kvalificerende bet med min. odds ${bookmaker.bonusMinOdds}
+                            </span>
+                            ${isBet2 ? `
+                                <div class="mt-2">
+                                    ${bookmaker.bonusType === 'matchingBonus' ? `
+                                        <div class="flex items-center gap-2">
+                                            <label class="text-sm text-gray-600">Saldo fra Bet 1:</label>
+                                            <input type="number" 
+                                                   id="${bookmakerId}-bet1-balance" 
+                                                   class="input-field w-32" 
+                                                   value="${bookmaker.bet1Balance || ''}"
+                                                   placeholder="DKK"
+                                                   ${!bookmaker.usedInBet1 ? 'disabled' : ''}>
+                                        </div>
+                                    ` : bookmaker.bonusType === 'freebet' ? `
+                                        <div class="flex items-center gap-2">
+                                            <label class="text-sm text-gray-600">Gevinst fra Bet 1:</label>
+                                            <input type="number" 
+                                                   id="${bookmakerId}-bet1-profit" 
+                                                   class="input-field w-32" 
+                                                   value="${bookmaker.bet1Profit || ''}"
+                                                   placeholder="DKK">
+                                            <div class="text-xs text-gray-500 ml-2">
+                                                ${bookmaker.usedInBet1 ? `(Freebet: ${bookmaker.bonusAmount} DKK)` : '(Ikke brugt i Bet 1)'}
+                                            </div>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            ` : ''}
+                        </div>` 
+                        : ''}
                 </div>
             </div>
             <div class="odds-grid">
@@ -800,8 +938,7 @@ function createBookmakerInputs(): void {
                            class="input-field" 
                            id="${bookmakerId}-team1" 
                            value="${odds.team1 || ''}"
-                           placeholder="Odds"
-                           ${customers.length === 0 ? 'disabled' : ''}>
+                           placeholder="Odds">
                     <div class="text-xs text-red-600 hidden mt-1" id="${bookmakerId}-team1-error">
                         Min. ${bookmaker.minOdds}
                     </div>
@@ -812,8 +949,7 @@ function createBookmakerInputs(): void {
                            class="input-field" 
                            id="${bookmakerId}-draw" 
                            value="${odds.draw || ''}"
-                           placeholder="Odds"
-                           ${customers.length === 0 ? 'disabled' : ''}>
+                           placeholder="Odds">
                     <div class="text-xs text-red-600 hidden mt-1" id="${bookmakerId}-draw-error">
                         Min. ${bookmaker.minOdds}
                     </div>
@@ -824,8 +960,7 @@ function createBookmakerInputs(): void {
                            class="input-field" 
                            id="${bookmakerId}-team2" 
                            value="${odds.team2 || ''}"
-                           placeholder="Odds"
-                           ${customers.length === 0 ? 'disabled' : ''}>
+                           placeholder="Odds">
                     <div class="text-xs text-red-600 hidden mt-1" id="${bookmakerId}-team2-error">
                         Min. ${bookmaker.minOdds}
                     </div>
@@ -834,68 +969,96 @@ function createBookmakerInputs(): void {
         `;
         container.appendChild(div);
 
-        // Kun tilføj event listeners hvis der er en aktiv kunde
-        if (customers.length > 0) {
-            // Tilføj event listeners til odds inputs med synkronisering
-            ['team1', 'draw', 'team2'].forEach(type => {
-                const input = document.getElementById(`${bookmakerId}-${type}`) as HTMLInputElement;
-                const error = document.getElementById(`${bookmakerId}-${type}-error`);
-                
-                if (input && error) {
-                    // Validering på input event
-                    input.addEventListener('input', () => {
-                        const value = parseFloat(input.value) || 0;
-                        
-                        // Validering
-                        if (value > 0 && value < bookmaker.minOdds) {
-                            error.classList.remove('hidden');
-                            input.classList.add('border-yellow-500');
-                        } else {
-                            error.classList.add('hidden');
-                            input.classList.remove('border-yellow-500');
-                        }
-                    });
-
-                    // Synkronisering på blur event
-                    input.addEventListener('blur', () => {
-                        const value = parseFloat(input.value) || 0;
-                        syncOddsAcrossCustomers(bookmaker.name, type as 'team1' | 'draw' | 'team2', value);
-                    });
-                }
-            });
-
-            // Tilføj toggle funktionalitet
-            const toggle = document.getElementById(`${bookmakerId}-active`) as HTMLInputElement;
-            if (toggle) {
-                const currentBookmaker = bookmaker;
-                toggle.addEventListener('change', () => {
-                    const card = toggle.closest('.bookmaker-card');
-                    if (card) {
-                        if (toggle.checked) {
-                            card.classList.remove('opacity-50');
-                        } else {
-                            card.classList.add('opacity-50');
+        // Tilføj event listeners for Bet 1 checkboxes og inputs
+        if (isBet2) {
+            const usedInBet1Checkbox = document.getElementById(`${bookmakerId}-used-in-bet1`) as HTMLInputElement;
+            if (usedInBet1Checkbox) {
+                usedInBet1Checkbox.addEventListener('change', () => {
+                    bookmaker.usedInBet1 = usedInBet1Checkbox.checked;
+                    
+                    // Opdater input felter baseret på checkbox status
+                    if (bookmaker.bonusType === 'matchingBonus') {
+                        const balanceInput = document.getElementById(`${bookmakerId}-bet1-balance`) as HTMLInputElement;
+                        if (balanceInput) {
+                            balanceInput.disabled = !usedInBet1Checkbox.checked;
+                            if (!usedInBet1Checkbox.checked) {
+                                balanceInput.value = '';
+                                bookmaker.bet1Balance = 0;
+                            }
                         }
                     }
-                    // Gem den opdaterede aktiv/inaktiv status
-                    const customer = getCurrentCustomer();
-                    const bookmaker = customer.bookmakers.find(bm => bm.name === currentBookmaker.name);
-                    if (bookmaker) {
-                        bookmaker.isActive = toggle.checked;
+                });
+            }
+
+            if (bookmaker.bonusType === 'matchingBonus') {
+                const balanceInput = document.getElementById(`${bookmakerId}-bet1-balance`) as HTMLInputElement;
+                if (balanceInput) {
+                    balanceInput.addEventListener('change', () => {
+                        const value = parseFloat(balanceInput.value) || 0;
+                        bookmaker.bet1Balance = value;
+                    });
+                }
+            } else if (bookmaker.bonusType === 'freebet') {
+                const profitInput = document.getElementById(`${bookmakerId}-bet1-profit`) as HTMLInputElement;
+                if (profitInput) {
+                    profitInput.addEventListener('change', () => {
+                        const value = parseFloat(profitInput.value) || 0;
+                        bookmaker.bet1Profit = value;
+                    });
+                }
+            }
+        }
+
+        // Tilføj event listeners til odds inputs med synkronisering
+        ['team1', 'draw', 'team2'].forEach(type => {
+            const input = document.getElementById(`${bookmakerId}-${type}`) as HTMLInputElement;
+            const error = document.getElementById(`${bookmakerId}-${type}-error`);
+            
+            if (input && error) {
+                // Validering på input event
+                input.addEventListener('input', () => {
+                    const value = parseFloat(input.value) || 0;
+                    
+                    // Validering
+                    if (value > 0 && value < bookmaker.minOdds) {
+                        error.classList.remove('hidden');
+                        input.classList.add('border-yellow-500');
+                    } else {
+                        error.classList.add('hidden');
+                        input.classList.remove('border-yellow-500');
                     }
                 });
 
-                // Sæt initial opacity baseret på isActive
-                const card = toggle.closest('.bookmaker-card');
-                if (card && !currentBookmaker.isActive) {
-                    card.classList.add('opacity-50');
-                }
+                // Synkronisering på blur event
+                input.addEventListener('blur', () => {
+                    const value = parseFloat(input.value) || 0;
+                    if (!bookmaker.odds) {
+                        bookmaker.odds = { team1: 0, draw: 0, team2: 0 };
+                    }
+                    bookmaker.odds[type as keyof typeof odds] = value;
+                });
             }
-        } else {
-            // Hvis der ikke er nogen kunde, deaktiver alle toggles
-            const toggle = document.getElementById(`${bookmakerId}-active`) as HTMLInputElement;
-            if (toggle) {
-                toggle.disabled = true;
+        });
+
+        // Tilføj toggle funktionalitet
+        const toggle = document.getElementById(`${bookmakerId}-active`) as HTMLInputElement;
+        if (toggle) {
+            toggle.addEventListener('change', () => {
+                const card = toggle.closest('.bookmaker-card');
+                if (card) {
+                    if (toggle.checked) {
+                        card.classList.remove('opacity-50');
+                    } else {
+                        card.classList.add('opacity-50');
+                    }
+                }
+                bookmaker.isActive = toggle.checked;
+            });
+
+            // Sæt initial opacity baseret på isActive
+            const card = toggle.closest('.bookmaker-card');
+            if (card && !bookmaker.isActive) {
+                card.classList.add('opacity-50');
             }
         }
     });
@@ -903,6 +1066,8 @@ function createBookmakerInputs(): void {
 
 function gatherOddsData(): BookmakerOdds[] {
     const customer = getCurrentCustomer();
+    const isBet2 = customer.betType === 'bonus';
+
     return customer.bookmakers.map(bookmaker => {
         const bookmakerId = generateBookmakerId(bookmaker.name);
         const team1Input = document.getElementById(`${bookmakerId}-team1`) as HTMLInputElement;
@@ -914,6 +1079,28 @@ function gatherOddsData(): BookmakerOdds[] {
         const drawValue = parseFloat(drawInput.value) || 0;
         const team2Value = parseFloat(team2Input.value) || 0;
         const isActive = activeToggle ? activeToggle.checked : bookmaker.isActive;
+
+        // Bestem stake og actual cost baseret på bet type og bonus type
+        let stake = bookmaker.fixedStake;
+        let actualCost = bookmaker.actualCost;
+
+        if (isBet2) {
+            if (!bookmaker.usedInBet1) {
+                // Hvis siden ikke blev brugt i Bet 1, skal den ikke inkluderes
+                stake = 0;
+                actualCost = 0;
+            } else if (bookmaker.bonusType === 'matchingBonus') {
+                // For matching bonus, brug den indtastede saldo
+                stake = bookmaker.bet1Balance || 0;
+                // Actual cost skal være lig med den oprindelige indbetaling, uanset saldo
+                actualCost = bookmaker.qualifyingBetAmount || 0;
+            } else if (bookmaker.bonusType === 'freebet') {
+                // For freebets, brug bonus beløbet
+                stake = bookmaker.bonusAmount || 0;
+                // Actual cost skal være lig med freebet beløbet
+                actualCost = bookmaker.bonusAmount || 0;
+            }
+        }
 
         // Marker odds under minimum ved at sætte dem til 0
         const validTeam1 = team1Value >= bookmaker.minOdds ? team1Value : 0;
@@ -938,8 +1125,8 @@ function gatherOddsData(): BookmakerOdds[] {
 
         return {
             name: bookmaker.name,
-            fixedStake: bookmaker.fixedStake,
-            actualCost: bookmaker.actualCost,
+            fixedStake: stake,  // Brug den beregnede stake
+            actualCost: actualCost,  // Brug den beregnede actual cost
             minOdds: bookmaker.minOdds,
             preferLoss: bookmaker.preferLoss,
             avoidWin: bookmaker.avoidWin,
@@ -954,9 +1141,12 @@ function gatherOddsData(): BookmakerOdds[] {
             }
         };
     }).filter(odds => {
+        // I Bet 2, tjek også at der er en gyldig stake og at siden blev brugt i Bet 1
+        const hasValidStake = !isBet2 || odds.fixedStake > 0;
+        const isUsedInBet2 = !isBet2 || customer.bookmakers.find(b => b.name === odds.name)?.usedInBet1;
         // Tjek at mindst ét gyldigt odds er indtastet og at bookmakeren er aktiv
         const hasValidOdds = odds.team1 > 0 || odds.draw > 0 || odds.team2 > 0;
-        return hasValidOdds && odds.isActive;
+        return hasValidOdds && odds.isActive && hasValidStake && isUsedInBet2;
     });
 }
 
@@ -985,25 +1175,6 @@ function downloadTemplate() {
     // Cleanup
     document.body.removeChild(link);
     window.URL.revokeObjectURL(url);
-}
-
-function parseDecimalValue(value: string): number {
-    // Fjern eventuelle whitespace og citationstegn
-    const cleaned = value.trim().replace(/^"(.*)"$/, '$1');
-    
-    // Hvis værdien indeholder komma, antag at det er decimalseparator
-    if (cleaned.includes(',')) {
-        // Erstat komma med punktum og fjern eventuelle andre kommaer
-        const parts = cleaned.split(',');
-        if (parts.length > 2) {
-            // Hvis der er flere kommaer, tag kun de første to dele
-            return parseFloat(parts[0] + '.' + parts[1]);
-        }
-        return parseFloat(cleaned.replace(',', '.'));
-    }
-    
-    // Ellers prøv at parse direkte
-    return parseFloat(cleaned);
 }
 
 // Event handler

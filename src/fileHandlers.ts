@@ -1,13 +1,7 @@
-import { getCurrentCustomer, generateBookmakerId } from './main';
+import { getCurrentCustomer, generateBookmakerId, BookmakerOdds } from './main';
 
 interface Bookmaker {
     name: string;
-}
-
-interface Customer {
-    id: string;
-    name: string;
-    bookmakers: Bookmaker[];
 }
 
 export function parseDecimalValue(value: string): number {
