@@ -22,7 +22,7 @@ interface TeamNames {
     team2: string;
 }
 
-interface BookmakerOdds {
+export interface BookmakerOdds {
     name: string;
     team1: number;
     draw: number;
@@ -176,22 +176,6 @@ function addCustomer() {
     currentCustomerId = newId;
     currentBetType = 'qualifying';
     createCustomerSelector();
-    createBookmakerInputs();
-}
-
-// Tilføj funktion til at synkronisere odds mellem kunder
-function syncOddsAcrossCustomers(bookmakerName: string, oddsType: 'team1' | 'draw' | 'team2', value: number) {
-    customers.forEach(customer => {
-        const bookmaker = customer.bookmakers.find(bm => bm.name === bookmakerName);
-        if (bookmaker) {
-            if (!bookmaker.odds) {
-                bookmaker.odds = { team1: 0, draw: 0, team2: 0 };
-            }
-            bookmaker.odds[oddsType] = value;
-        }
-    });
-
-    // Opdater UI for den aktuelle kunde
     createBookmakerInputs();
 }
 
@@ -838,11 +822,6 @@ function updateUI(result: ArbitrageResult): void {
             </div>
         </div>
     `;
-}
-
-// Type guard for at tjekke om et objekt er en CustomerBookmaker
-function isCustomerBookmaker(bookmaker: BookmakerInfo | CustomerBookmaker): bookmaker is CustomerBookmaker {
-    return 'odds' in bookmaker;
 }
 
 function createBookmakerInputs(): void {

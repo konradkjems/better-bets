@@ -1,8 +1,4 @@
-import { getCurrentCustomer, generateBookmakerId, BookmakerOdds } from './main';
-
-interface Bookmaker {
-    name: string;
-}
+import { getCurrentCustomer, generateBookmakerId } from './main';
 
 export function parseDecimalValue(value: string): number {
     // Fjern eventuelle whitespace og citationstegn
