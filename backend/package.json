@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "start": "node dist/index.js",
-    "dev": "nodemon src/index.ts",
+    "dev": "nodemon --exec ts-node src/index.ts",
     "build": "tsc",
     "watch": "tsc -w"
   },
@@ -23,8 +23,8 @@
     "@types/express": "^4.17.17",
     "@types/jsonwebtoken": "^9.0.7",
     "@types/node": "^20.5.7",
-    "nodemon": "2.0.22",
-    "ts-node": "^10.9.1",
-    "typescript": "^5.2.2"
+    "nodemon": "^latest_version",
+    "ts-node": "^latest_version",
+    "typescript": "^latest_version"
   }
 }

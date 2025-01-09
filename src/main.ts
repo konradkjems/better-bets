@@ -842,6 +842,7 @@ function createBookmakerInputs(): void {
                 const error = document.getElementById(`${bookmakerId}-${type}-error`);
                 
                 if (input && error) {
+                    // Validering på input event
                     input.addEventListener('input', () => {
                         const value = parseFloat(input.value) || 0;
                         
@@ -853,8 +854,11 @@ function createBookmakerInputs(): void {
                             error.classList.add('hidden');
                             input.classList.remove('border-yellow-500');
                         }
+                    });
 
-                        // Synkroniser odds på tværs af kunder
+                    // Synkronisering på blur event
+                    input.addEventListener('blur', () => {
+                        const value = parseFloat(input.value) || 0;
                         syncOddsAcrossCustomers(bookmaker.name, type as 'team1' | 'draw' | 'team2', value);
                     });
                 }
@@ -957,26 +961,30 @@ function gatherOddsData(): BookmakerOdds[] {
 }
 
 function downloadTemplate() {
-    const customer = getCurrentCustomer();
+    // Brug standard bookmakere hvis der ikke er nogen aktiv kunde
+    const bookmakers = customers.length === 0 ? BOOKMAKERS : getCurrentCustomer().bookmakers;
     const headers = ['Bookmaker', 'Hold 1', 'Uafgjort', 'Hold 2'];
-    const rows = customer.bookmakers.map(bookmaker => [bookmaker.name, '', '', '']);
     
-    const csvContent = [
-        headers.join(','),
-        ...rows.map(row => row.join(','))
-    ].join('\n');
+    const rows = bookmakers.map(bookmaker => [bookmaker.name, '', '', '']);
     
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const csvContent = '\uFEFF' + [
+        headers.join(';'),
+        ...rows.map(row => row.join(';'))
+    ].join('\r\n');
+    
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
+    const url = window.URL.createObjectURL(blob);
+    
     const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    
     link.setAttribute('href', url);
     link.setAttribute('download', 'odds_skabelon.csv');
-    link.style.visibility = 'hidden';
     
     document.body.appendChild(link);
     link.click();
+    
+    // Cleanup
     document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
 }
 
 function parseDecimalValue(value: string): number {
@@ -1031,7 +1039,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     const downloadButton = document.getElementById('downloadTemplate');
-    downloadButton?.addEventListener('click', downloadTemplate);
+    console.log('Download button found:', downloadButton); // Debug log
+    if (downloadButton) {
+        downloadButton.addEventListener('click', () => {
+            console.log('Download button clicked'); // Debug log
+            downloadTemplate();
+        });
+    } else {
+        console.error('Download button not found in DOM');
+    }
 
     // Importer og tilføj handleFileUpload til window objektet
     import('./fileHandlers').then(module => {

@@ -75,9 +75,9 @@ export function handleFileUpload(event: Event) {
             const row = lines[i];
             if (!row.trim()) continue;
             
-            // Split på komma, men bevar kommaer inden for citationstegn
-            const cells = row.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/);
-            const [bookmaker, ...oddsCells] = cells.map(cell => cell.trim().replace(/^"(.*)"$/, '$1'));
+            // Split på semikolon i stedet for komma
+            const cells = row.split(';').map(cell => cell.trim());
+            const [bookmaker, ...oddsCells] = cells;
             
             if (!bookmaker) continue;
             
@@ -115,7 +115,7 @@ export function handleFileUpload(event: Event) {
                     console.log(`Sat ${matchingBookmaker.name} team1 til ${team1Value}`);
                 }
             }
-            
+
             if (oddsCells[1]) {
                 const drawValue = parseDecimalValue(oddsCells[1]);
                 if (!isNaN(drawValue) && drawValue > 0) {
@@ -146,6 +146,12 @@ export function handleFileUpload(event: Event) {
 
         if (updatedCount > 0) {
             alert(`CSV fil er blevet indlæst. Opdaterede odds for ${updatedCount} bookmakere.`);
+            
+            // Trigger beregning automatisk efter upload
+            const calculateButton = document.getElementById('calculateButton');
+            if (calculateButton) {
+                calculateButton.click();
+            }
         } else {
             alert('Ingen odds blev opdateret. Tjek at CSV filen har det korrekte format.');
         }
