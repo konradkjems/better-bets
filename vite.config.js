@@ -9,5 +9,6 @@ export default defineConfig({
     strictPort: true,
     timeout: 120000
   },
+  base: "/",
   // ... resten af konfigurationen ...
 }); 
