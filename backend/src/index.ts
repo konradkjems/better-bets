@@ -26,6 +26,11 @@ app.get('/api/health', (req, res) => {
     res.json({ status: 'ok' });
 });
 
+// Tilføj en route til roden (/)
+app.get('/', (req, res) => {
+  res.json({ message: 'Velkommen til Better Bets API!' });
+});
+
 // Connect to database
 connectDB();
 
