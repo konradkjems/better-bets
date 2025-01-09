@@ -1,0 +1,25 @@
+{
+  "version": 3,
+  "base": "/",
+  "pages": {
+    "/": {
+      "file": "index.html"
+    },
+    "/login.html": {
+      "file": "login.html"
+    },
+    "/register.html": {
+      "file": "register.html"
+    },
+    "/about": {
+      "file": "about.html"
+    },
+    "/pricing": {
+      "file": "pricing.html"
+    },
+    "/contact": {
+      "file": "contact.html"
+    }
+  },
+  "dynamicRoutes": {}
+} 
