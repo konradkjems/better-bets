@@ -6,10 +6,13 @@
       "use": "@vercel/node"
     }
   ],
+  
   "routes": [
     {
       "src": "/(.*)",
       "dest": "api/backend/src/index.ts"
     }
-  ]
+  ],
+  "outputDirectory": "."
+  
 } 

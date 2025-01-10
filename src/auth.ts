@@ -116,12 +116,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Login form
     const loginForm = document.getElementById('loginForm');
-    loginForm?.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const email = (document.getElementById('loginEmail') as HTMLInputElement).value;
-        const password = (document.getElementById('loginPassword') as HTMLInputElement).value;
-        handleLogin(email, password);
-    });
+    if (loginForm) {
+        loginForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const email = (document.getElementById('loginEmail') as HTMLInputElement).value;
+            const password = (document.getElementById('loginPassword') as HTMLInputElement).value;
+            await handleLogin(email, password);
+        });
+    }
 
     // Register form
     const registerForm = document.getElementById('registerForm');

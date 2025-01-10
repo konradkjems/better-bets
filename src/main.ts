@@ -414,14 +414,13 @@ function calculateArbitrage(oddsData: BookmakerOdds[]): ArbitrageResult {
     // Beregn potentielle returns for hver bookmaker for hvert udfald
     const bookmakerReturns = oddsData.map(bm => {
         const bookmakerInfo = customer.bookmakers.find(b => b.name === bm.name);
-        
-        // For kvalificerende bets vil vi minimere tab
-        // For bonus bets vil vi maksimere gevinst på freebets
-        const calculateReturn = (odds: number, stake: number) => {
-            if (!isQualifyingBet && bookmakerInfo?.bonusType === 'freebet') {
+
+        // Opdater calculateReturn til at tjekke for freebet uafhængigt af betType
+        const calculateReturn = (odds: number, stake: number, isFreebet: boolean) => {
+            if (isFreebet) {
                 return (odds - 1) * stake; // Kun gevinst, ikke indsats tilbage for freebets
             }
-            return odds * stake; // Normal beregning for kvalificerende bets
+            return odds * stake; // Normal beregning
         };
 
         // Find det laveste odds (favorit) for denne bookmaker
@@ -430,14 +429,15 @@ function calculateArbitrage(oddsData: BookmakerOdds[]): ArbitrageResult {
         const favoritType = team1Odds <= team2Odds ? 'team1' as const : 'team2' as const;
         const underdogType = team1Odds <= team2Odds ? 'team2' as const : 'team1' as const;
 
+        // Kald calculateReturn med isFreebet parameter
         return {
             ...bm,
             favoritType,
             underdogType,
             returns: {
-                team1: calculateReturn(bm.team1, bm.fixedStake),
-                draw: calculateReturn(bm.draw, bm.fixedStake),
-                team2: calculateReturn(bm.team2, bm.fixedStake)
+                team1: calculateReturn(bm.team1, bm.fixedStake, bookmakerInfo?.bonusType === 'freebet'),
+                draw: calculateReturn(bm.draw, bm.fixedStake, bookmakerInfo?.bonusType === 'freebet'),
+                team2: calculateReturn(bm.team2, bm.fixedStake, bookmakerInfo?.bonusType === 'freebet')
             }
         };
     });
