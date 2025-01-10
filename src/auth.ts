@@ -127,14 +127,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Register form
     const registerForm = document.getElementById('registerForm');
-    registerForm?.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const name = (document.getElementById('registerName') as HTMLInputElement).value;
-        const email = (document.getElementById('registerEmail') as HTMLInputElement).value;
-        const password = (document.getElementById('registerPassword') as HTMLInputElement).value;
-        const passwordConfirm = (document.getElementById('registerPasswordConfirm') as HTMLInputElement).value;
-        handleRegister(name, email, password, passwordConfirm);
-    });
+    if (registerForm) {
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = (document.getElementById('registerName') as HTMLInputElement).value;
+            const email = (document.getElementById('registerEmail') as HTMLInputElement).value;
+            const password = (document.getElementById('registerPassword') as HTMLInputElement).value;
+            const passwordConfirm = (document.getElementById('registerPasswordConfirm') as HTMLInputElement).value;
+            await handleRegister(name, email, password, passwordConfirm);
+        });
+    }
 
     // Logout button
     const logoutButton = document.getElementById('logoutButton');
