@@ -109,11 +109,8 @@ const BOOKMAKERS: BookmakerInfo[] = [
 
 // Global state
 let customers: Customer[] = [];
-let currentCustomerId = '';
-let isFirstCalculation = true;
-let currentBetType: 'qualifying' | 'bonus' = 'qualifying';  // Default til qualifying bets
-
-// Tilføj global variabel til at gemme sidste beregning
+let currentCustomerId: string | null = null;
+let currentBetType: 'qualifying' | 'bonus' = 'qualifying';
 let lastCalculatedResult: ArbitrageResult | null = null;
 
 // Tilføj type definition for window
@@ -121,31 +118,6 @@ declare global {
     interface Window {
         handleFileUpload: (event: Event) => void;
     }
-}
-
-// Funktion til at initialisere den første kunde
-function initializeFirstCustomer(): boolean {
-    const customerName = prompt('Indtast navn på den første kunde:');
-    if (!customerName) {
-        alert('Du skal indtaste et navn for at fortsætte');
-        return false;
-    }
-
-    const firstCustomer: Customer = {
-        id: 'kunde1',
-        name: customerName,
-        bookmakers: BOOKMAKERS.map(bm => ({...bm})),
-        teamNames: {
-            team1: 'Team 1',
-            team2: 'Team 2'
-        },
-        betType: 'qualifying'  // Start med qualifying bets
-    };
-    customers = [firstCustomer];
-    currentCustomerId = 'kunde1';
-    currentBetType = 'qualifying';
-    createCustomerSelector();
-    return true;
 }
 
 // Hjælpefunktioner til at håndtere kunder
@@ -296,9 +268,6 @@ function createCustomerSelector() {
                 customers = [firstCustomer];
                 currentCustomerId = 'kunde1';
                 currentBetType = 'qualifying';
-                isFirstCalculation = false;
-
-                // Opdater visningen
                 createCustomerSelector();  // Dette vil nu vise bet type vælgeren
                 createBookmakerInputs();
             });
