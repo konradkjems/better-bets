@@ -97,7 +97,6 @@ const BOOKMAKERS: BookmakerInfo[] = [
     { name: 'LeoVegas', fixedStake: 500, hasBonus: false, actualCost: 500, minOdds: 1.8, isActive: true, bonusType: 'freebet', bonusAmount: 500, bonusMinOdds: 1.8, qualifyingBetAmount: 500, usedInBet1: true },
     { name: 'ComeOn', fixedStake: 2000, hasBonus: true, actualCost: 1000, minOdds: 1.8, preferLoss: true, isActive: true, bonusType: 'matchingBonus', bonusAmount: 1000, bonusMinOdds: 1.8, qualifyingBetAmount: 1000, usedInBet1: true },
     { name: 'NordicBet', fixedStake: 500, hasBonus: false, actualCost: 500, minOdds: 1.8, isActive: true, bonusType: 'freebet', bonusAmount: 500, bonusMinOdds: 1.8, qualifyingBetAmount: 500, usedInBet1: true },
-    { name: 'Betsson', fixedStake: 500, hasBonus: false, actualCost: 500, minOdds: 1.8, isActive: true, bonusType: 'freebet', bonusAmount: 500, bonusMinOdds: 1.8, qualifyingBetAmount: 500, usedInBet1: true },
     { name: '888sport', fixedStake: 600, hasBonus: true, actualCost: 500, minOdds: 1.8, isActive: true, bonusType: 'freebet', bonusAmount: 500, bonusMinOdds: 1.8, qualifyingBetAmount: 500, usedInBet1: true },
     { name: 'Bet25', fixedStake: 250, hasBonus: false, actualCost: 250, minOdds: 1.5, isActive: true, bonusType: 'freebet', bonusAmount: 250, bonusMinOdds: 1.5, qualifyingBetAmount: 250, usedInBet1: true },
     { name: 'Expekt', fixedStake: 600, hasBonus: false, actualCost: 600, minOdds: 1.8, isActive: true, bonusType: 'freebet', bonusAmount: 600, bonusMinOdds: 1.8, qualifyingBetAmount: 600, usedInBet1: true },
@@ -790,7 +789,7 @@ function updateUI(result: ArbitrageResult): void {
                         <span class="font-medium">${result.totalStake.toLocaleString('da-DK')} DKK</span>
                     </div>
                     <div class="flex justify-between text-sm">
-                        <span class="text-gray-600">Faktisk kostnad:</span>
+                        <span class="text-gray-600">Faktisk omkostning:</span>
                         <span class="font-medium">${result.totalActualCost.toLocaleString('da-DK')} DKK</span>
                     </div>
                 </div>
