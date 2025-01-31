@@ -104,7 +104,8 @@ const BOOKMAKERS: BookmakerInfo[] = [
     { name: 'Jackpotbet', fixedStake: 2000, hasBonus: true, actualCost: 1000, minOdds: 1.5, isActive: true, bonusType: 'matchingBonus', bonusAmount: 1000, bonusMinOdds: 1.5, qualifyingBetAmount: 1000, usedInBet1: true },
     { name: 'Tipwin', fixedStake: 1600, hasBonus: true, actualCost: 800, minOdds: 1.5, avoidWin: true, isActive: true, bonusType: 'matchingBonus', bonusAmount: 800, bonusMinOdds: 1.5, qualifyingBetAmount: 800, usedInBet1: true },
     { name: 'Betano', fixedStake: 2000, hasBonus: true, actualCost: 1000, minOdds: 1.8, isActive: true, bonusType: 'matchingBonus', bonusAmount: 1000, bonusMinOdds: 1.8, qualifyingBetAmount: 1000, usedInBet1: true },
-    { name: 'Mrgreen', fixedStake: 400, hasBonus: true, actualCost: 300, minOdds: 2.0, isActive: true, bonusType: 'freebet', bonusAmount: 300, bonusMinOdds: 2.0, qualifyingBetAmount: 300, usedInBet1: true }
+    { name: 'Mrgreen', fixedStake: 400, hasBonus: true, actualCost: 300, minOdds: 2.0, isActive: true, bonusType: 'freebet', bonusAmount: 300, bonusMinOdds: 2.0, qualifyingBetAmount: 300, usedInBet1: true },
+    { name: "Mrplay", fixedStake: 2000, hasBonus: true, actualCost: 1000, minOdds: 2.0, isActive: true, bonusType: 'matchingBonus', bonusAmount: 1000, bonusMinOdds: 2.0, qualifyingBetAmount: 1000, usedInBet1: true }
 ];
 
 // Global state
