@@ -236,6 +236,9 @@ function createCustomerSelector() {
         
         const startButton = document.getElementById('startCalculationButton');
         startButton?.addEventListener('click', () => {
+            const container = document.getElementById('customerSelector');
+            if (!container) return;
+
             container.innerHTML = `
                 <div class="bg-white p-6 rounded-lg shadow-sm">
                     <h2 class="text-xl font-bold mb-4">Ny Beregning</h2>
@@ -293,6 +296,7 @@ function createCustomerSelector() {
                 customers = [firstCustomer];
                 currentCustomerId = 'kunde1';
                 currentBetType = 'qualifying';
+                isFirstCalculation = false;
 
                 // Opdater visningen
                 createCustomerSelector();  // Dette vil nu vise bet type vælgeren
@@ -726,12 +730,18 @@ function updateUI(result: ArbitrageResult): void {
             <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Uafgjort</th>
             <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">${team2Name}</th>
             <th class="px-4 py-3 text-right text-sm font-semibold text-gray-700">Indsats</th>
+            <th class="px-4 py-3 text-right text-sm font-semibold text-gray-700">Gevinst</th>
         `;
     }
 
     // Generer tabel med alle bookmakere
     let tableHTML = '';
     result.allBookmakers.forEach((bm: ArbitrageResult['allBookmakers'][0]) => {
+        // Beregn gevinst baseret på betType
+        const potentialWin = bm.betType === 'team1' ? bm.team1Odds * bm.fixedStake :
+                            bm.betType === 'draw' ? bm.drawOdds * bm.fixedStake :
+                            bm.team2Odds * bm.fixedStake;
+
         tableHTML += `
             <tr class="hover:bg-gray-50 transition-colors duration-150">
                 <td class="px-4 py-3">
@@ -770,9 +780,41 @@ function updateUI(result: ArbitrageResult): void {
                         `<div class="text-xs text-green-600">${bm.actualCost.toLocaleString('da-DK')} DKK</div>` : 
                         ''}
                 </td>
+                <td class="px-4 py-3 text-right">
+                    <div class="font-medium text-green-600">${potentialWin.toLocaleString('da-DK')} DKK</div>
+                    ${bm.actualCost !== bm.fixedStake ? 
+                        `<div class="text-xs text-green-600">Profit: ${(potentialWin - bm.actualCost).toLocaleString('da-DK')} DKK</div>` : 
+                        ''}
+                </td>
             </tr>
         `;
     });
+
+    // Tilføj total række
+    tableHTML += `
+        <tr class="bg-gray-50 font-semibold border-t-2 border-gray-200">
+            <td class="px-4 py-3">Total</td>
+            <td class="px-4 py-3 text-right">${result.potentialReturns.team1.toLocaleString('da-DK')} DKK</td>
+            <td class="px-4 py-3 text-right">${result.potentialReturns.draw.toLocaleString('da-DK')} DKK</td>
+            <td class="px-4 py-3 text-right">${result.potentialReturns.team2.toLocaleString('da-DK')} DKK</td>
+            <td class="px-4 py-3 text-right">
+                <div>${result.totalStake.toLocaleString('da-DK')} DKK</div>
+                <div class="text-sm text-gray-600">${result.totalActualCost.toLocaleString('da-DK')} DKK</div>
+            </td>
+            <td class="px-4 py-3 text-right">
+                <div class="text-green-600">Min: ${Math.min(
+                    result.potentialReturns.team1,
+                    result.potentialReturns.draw,
+                    result.potentialReturns.team2
+                ).toLocaleString('da-DK')} DKK</div>
+                <div class="text-sm text-green-600">Max: ${Math.max(
+                    result.potentialReturns.team1,
+                    result.potentialReturns.draw,
+                    result.potentialReturns.team2
+                ).toLocaleString('da-DK')} DKK</div>
+            </td>
+        </tr>
+    `;
     
     resultsBody.innerHTML = tableHTML;
 
@@ -1157,19 +1199,10 @@ function downloadTemplate() {
 
 // Event handler
 document.addEventListener('DOMContentLoaded', () => {
-    createBookmakerInputs(); // Vis tomme inputs først
+    createCustomerSelector(); // Vis tomme inputs først
     
     const calculateButton = document.getElementById('calculateButton');
     calculateButton?.addEventListener('click', async () => {
-        // Tjek om det er første beregning
-        if (isFirstCalculation) {
-            if (!initializeFirstCustomer()) {
-                return; // Stop hvis brugeren ikke indtaster et navn
-            }
-            isFirstCalculation = false;
-            createBookmakerInputs(); // Genopbyg inputs med den nye kunde
-        }
-
         const oddsData = gatherOddsData();
 
         if (oddsData.length === 0) {
@@ -1188,14 +1221,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     const downloadButton = document.getElementById('downloadTemplate');
-    console.log('Download button found:', downloadButton); // Debug log
     if (downloadButton) {
         downloadButton.addEventListener('click', () => {
-            console.log('Download button clicked'); // Debug log
             downloadTemplate();
         });
-    } else {
-        console.error('Download button not found in DOM');
     }
 
     // Importer og tilføj handleFileUpload til window objektet

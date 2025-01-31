@@ -8,6 +8,11 @@
     <link rel="icon" type="image/svg+xml" href="/src/assets/Better Bets Icon.svg">
     <script type="module" src="/src/main.ts"></script>
     <script type="module" src="/src/fileHandlers.ts"></script>
+    <!-- Vercel Analytics -->
+    <script>
+    window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    </script>
+    <script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body class="bg-gray-50 min-h-screen">
     <!-- Navigation -->
@@ -35,6 +40,42 @@
             <h1 class="text-3xl font-bold text-gray-800 mb-2">Better Bets Lommeregner</h1>
             <p class="text-gray-600">Find de bedste betting muligheder på tværs af bookmakere</p>
         </header>
+
+        <!-- Instruktioner -->
+        <div class="max-w-3xl mx-auto mb-8 bg-blue-50 rounded-xl p-6 shadow-sm">
+            <h2 class="text-xl font-bold text-blue-800 mb-4">Sådan kommer du i gang:</h2>
+            <ol class="space-y-3 text-blue-900">
+                <li class="flex items-start gap-3">
+                    <span class="flex-shrink-0 w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center font-bold">1</span>
+                    <span>Klik på "Start Ny Beregning" og indtast dit navn samt navnene på de to hold du vil beregne odds for.</span>
+                </li>
+                <li class="flex items-start gap-3">
+                    <span class="flex-shrink-0 w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center font-bold">2</span>
+                    <span>Indtast odds fra forskellige bookmakere. Du kan enten:
+                        <ul class="ml-9 mt-2 space-y-1 list-disc text-blue-800">
+                            <li>Indtaste odds manuelt for hver bookmaker</li>
+                            <li>Downloade vores CSV-skabelon, udfylde den og uploade den igen</li>
+                        </ul>
+                    </span>
+                </li>
+                <li class="flex items-start gap-3">
+                    <span class="flex-shrink-0 w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center font-bold">3</span>
+                    <span>Brug toggle-knapperne ved siden af hver bookmaker for at vælge hvilke bookmakere der skal indgå i beregningen.</span>
+                </li>
+                <li class="flex items-start gap-3">
+                    <span class="flex-shrink-0 w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center font-bold">4</span>
+                    <span>Klik på "Find Bedste Arbitrage Mulighed" for at se den optimale fordeling af indsatser.</span>
+                </li>
+            </ol>
+            <div class="mt-4 pt-4 border-t border-blue-200">
+                <p class="text-blue-800 font-medium">💡 Tips:</p>
+                <ul class="mt-2 space-y-1 list-disc ml-5 text-blue-800">
+                    <li>Jo flere bookmakere du inkluderer, jo større chance er der for at finde en god arbitrage mulighed</li>
+                    <li>Sørg for at odds er indtastet korrekt - selv små fejl kan påvirke resultatet</li>
+                    <li>Hold øje med minimum odds kravene for hver bookmaker</li>
+                </ul>
+            </div>
+        </div>
         
         <!-- Kunde vælger -->
         <div id="customerSelector" class="mb-6 bg-white rounded-xl shadow-sm p-4"></div>
