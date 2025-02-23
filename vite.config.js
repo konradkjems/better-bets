@@ -3,20 +3,24 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
   server: {
-    port: 3000,
-    open: true,
+    port: 5173,
+    open: '/index.html',
     host: true,
     strictPort: true,
     timeout: 120000
   },
-  base: "/",
+  base: './',
   build: {
     outDir: 'dist',
     rollupOptions: {
       input: {
-        main: 'index.html'
+        main: 'index.html',
+        calculator: 'calculator.html'
       }
     }
+  },
+  optimizeDeps: {
+    include: []
   },
   // ... resten af konfigurationen ...
 }); 

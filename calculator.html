@@ -4,18 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Better Bets Lommeregner</title>
-    <link rel="stylesheet" href="/src/style.css">
-    <link rel="icon" type="image/svg+xml" href="/src/assets/Better Bets Icon.svg">
-    <script type="module" src="/src/main.ts"></script>
-    <script type="module" src="/src/fileHandlers.ts"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="./src/style.css">
+    <link rel="icon" type="image/svg+xml" href="./src/assets/Better Bets Icon.svg">
 </head>
 <body class="bg-gray-50 min-h-screen">
     <!-- Navigation -->
     <nav class="bg-white shadow-sm">
         <div class="container mx-auto px-4">
             <div class="flex justify-between items-center h-16">
-                <a href="/" class="flex items-center gap-2">
-                    <img src="/src/assets/Better Bets Icon.svg" alt="Better Bets Logo" class="h-8 w-8">
+                <a href="./" class="flex items-center gap-2">
+                    <img src="./src/assets/Better Bets Icon.svg" alt="Better Bets Logo" class="h-8 w-8">
                     <span class="text-xl font-bold text-gray-800">Better Bets</span>
                 </a>
                 <div class="flex items-center gap-4">
@@ -25,6 +24,26 @@
             </div>
         </div>
     </nav>
+
+    <!-- Sub-navigation -->
+    <div class="bg-white border-b">
+        <div class="container mx-auto px-4">
+            <div class="flex space-x-8">
+                <a href="/" class="px-3 py-4 text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-b-2 hover:border-gray-700">
+                    Forside
+                </a>
+                <a href="/calculator.html" class="px-3 py-4 text-sm font-medium text-gray-900 border-b-2 border-blue-500">
+                    Lommeregner
+                </a>
+                <a href="/history.html" class="px-3 py-4 text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-b-2 hover:border-gray-700">
+                    Historik
+                </a>
+                <a href="/settings.html" class="px-3 py-4 text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-b-2 hover:border-gray-700">
+                    Indstillinger
+                </a>
+            </div>
+        </div>
+    </div>
 
     <!-- Loading overlay -->
     <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
@@ -39,6 +58,77 @@
             <h1 class="text-3xl font-bold text-gray-800 mb-2">Better Bets Lommeregner</h1>
             <p class="text-gray-600">Find de bedste betting muligheder på tværs af bookmakere</p>
         </header>
+
+        <!-- Info boks -->
+        <div class="mb-8 bg-blue-50 rounded-xl p-6">
+            <h2 class="text-xl font-bold text-blue-900 mb-4">Sådan kommer du i gang:</h2>
+            <ol class="space-y-4">
+                <li class="flex gap-3">
+                    <span class="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-blue-100 rounded-full text-blue-800 font-semibold">1</span>
+                    <div>
+                        <p class="text-blue-900">Klik på "Start Ny Beregning" og indtast dit navn samt navnene på de to hold du vil beregne odds for.</p>
+                    </div>
+                </li>
+                <li class="flex gap-3">
+                    <span class="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-blue-100 rounded-full text-blue-800 font-semibold">2</span>
+                    <div>
+                        <p class="text-blue-900">Indtast odds fra forskellige bookmakere. Du kan enten:</p>
+                        <ul class="list-disc ml-6 mt-2 text-blue-800">
+                            <li>Vælg en kamp fra vores live odds feed (opdateres automatisk)</li>
+                            <li>Indtaste odds manuelt for hver bookmaker</li>
+                            <li>Downloade vores CSV-skabelon, udfylde den og uploade den igen</li>
+                        </ul>
+                    </div>
+                </li>
+                <li class="flex gap-3">
+                    <span class="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-blue-100 rounded-full text-blue-800 font-semibold">3</span>
+                    <div>
+                        <p class="text-blue-900">Brug toggle-knapperne ved siden af hver bookmaker for at vælge hvilke bookmakere der skal indgå i beregningen.</p>
+                    </div>
+                </li>
+                <li class="flex gap-3">
+                    <span class="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-blue-100 rounded-full text-blue-800 font-semibold">4</span>
+                    <div>
+                        <p class="text-blue-900">Klik på "Find Bedste Arbitrage Mulighed" for at se den optimale fordeling af indsatser.</p>
+                    </div>
+                </li>
+            </ol>
+
+            <div class="mt-6 pt-4 border-t border-blue-200">
+                <h3 class="flex items-center gap-2 text-lg font-semibold text-blue-900 mb-3">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM5 10a1 1 0 01-1 1H3a1 1 0 110-2h1a1 1 0 011 1zM8 16v-1h4v1a2 2 0 11-4 0zM12 14c.015-.34.208-.646.477-.859a4 4 0 10-4.954 0c.27.213.462.519.476.859h4.002z"/>
+                    </svg>
+                    Tips:
+                </h3>
+                <ul class="space-y-2 text-blue-800">
+                    <li class="flex items-center gap-2">
+                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        Jo flere bookmakere du inkluderer, jo større chance er der for at finde en god arbitrage mulighed
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        Sørg for at odds er indtastet korrekt - selv små fejl kan påvirke resultatet
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        Hold øje med minimum odds kravene for hver bookmaker
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        Brug vores live odds feed for at få de mest præcise og opdaterede odds
+                    </li>
+                </ul>
+            </div>
+        </div>
         
         <!-- Kunde vælger -->
         <div id="customerSelector" class="mb-6 bg-white rounded-xl shadow-sm p-4"></div>
@@ -72,6 +162,59 @@
                                 </svg>
                                 Download Skabelon
                             </button>
+                        </div>
+                    </div>
+                    <!-- Tilføj automatisk odds sektion -->
+                    <div class="mb-6 p-6 bg-white rounded-xl shadow-sm">
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-800">Hent Odds Automatisk</h3>
+                                <p class="text-sm text-gray-600">Vælg en fodboldkamp for at hente odds automatisk</p>
+                            </div>
+                        </div>
+                        <div class="space-y-6">
+                            <div>
+                                <label for="matchSelect" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Vælg Kamp
+                                </label>
+                                <div class="space-y-4">
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label for="leagueSelect" class="block text-sm font-medium text-gray-700 mb-1">
+                                                Liga
+                                            </label>
+                                            <select id="leagueSelect" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 pl-4 pr-10 py-2.5">
+                                                <option value="">Alle ligaer</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label for="daysInput" class="block text-sm font-medium text-gray-700 mb-1">
+                                                Dage frem
+                                            </label>
+                                            <input type="number" 
+                                                   id="daysInput" 
+                                                   class="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 pl-4 pr-10 py-2.5"
+                                                   value="7"
+                                                   min="1"
+                                                   max="30">
+                                        </div>
+                                    </div>
+                                    <div class="relative">
+                                        <select id="matchSelect" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 pl-4 pr-10 py-2.5">
+                                            <option value="">Indlæser kampe...</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <p class="mt-2 text-sm text-gray-500">Kampene er grupperet efter dato</p>
+                            </div>
+                            <div>
+                                <button id="fetchOddsButton" class="w-full bg-blue-600 text-white px-4 py-3 rounded-lg font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2" disabled>
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                                    </svg>
+                                    Hent Odds
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <div class="overflow-y-auto max-h-[calc(100vh-300px)]" id="bookmakerInputs">
@@ -126,7 +269,7 @@
             </div>
         </div>
     </div>
-    <script type="module" src="/src/main.ts"></script>
-    <script type="module" src="/src/auth.ts"></script>
+    <script type="module" src="./src/main.ts"></script>
+    <script type="module" src="./src/fileHandlers.ts"></script>
 </body>
 </html> 

@@ -2,14 +2,13 @@
 export default {
   content: [
     "./index.html",
-    "./login.html",
-    "./register.html",
     "./calculator.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
+    "./history.html",
+    "./settings.html",
+    "./src/**/*.{js,ts}"
   ],
   theme: {
     extend: {},
   },
   plugins: [],
-}
-
+} 
