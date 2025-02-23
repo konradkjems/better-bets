@@ -2,35 +2,37 @@ import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 
 export interface IUser extends mongoose.Document {
+    name: string;
     email: string;
     password: string;
-    name: string;
     createdAt: Date;
+    updatedAt: Date;
     comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
 const userSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: [true, 'Navn er påkrævet'],
+        trim: true,
+        minlength: [2, 'Navn skal være mindst 2 tegn'],
+        maxlength: [50, 'Navn må højst være 50 tegn']
+    },
     email: {
         type: String,
-        required: true,
+        required: [true, 'Email er påkrævet'],
         unique: true,
         trim: true,
-        lowercase: true
+        lowercase: true,
+        match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Ugyldig email adresse']
     },
     password: {
         type: String,
-        required: true,
-        minlength: 6
-    },
-    name: {
-        type: String,
-        required: true,
-        trim: true
-    },
-    createdAt: {
-        type: Date,
-        default: Date.now
+        required: [true, 'Password er påkrævet'],
+        minlength: [6, 'Password skal være mindst 6 tegn']
     }
+}, {
+    timestamps: true
 });
 
 // Hash password før gemning
