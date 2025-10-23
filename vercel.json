@@ -4,6 +4,20 @@
   "outputDirectory": "dist",
   "framework": "vite",
   "installCommand": "npm ci",
+  "functions": {
+    "api/test.ts": {
+      "runtime": "nodejs20.x"
+    },
+    "api/calculations/list.ts": {
+      "runtime": "nodejs20.x"
+    },
+    "api/calculations/save.ts": {
+      "runtime": "nodejs20.x"
+    },
+    "api/calculations/[id].ts": {
+      "runtime": "nodejs20.x"
+    }
+  },
   "rewrites": [
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]
