@@ -15,6 +15,8 @@ interface BookmakerInfo {
     qualifyingBetAmount?: number;  // Beløb der skal spilles for at låse bonus op
     isBonusLocked?: boolean;  // Om bonussen er låst op eller ej
     usedInBet1?: boolean;  // Om bookmakeren blev brugt i Bet 1
+    bonusOnlyIfLost?: boolean;  // Om bonus kun gives hvis det kvalificerende bet tabes
+    bet1Lost?: boolean;  // Om Bet 1 blev tabt (kun relevant for bonusOnlyIfLost bookmakere)
 }
 
 interface TeamNames {
@@ -92,20 +94,19 @@ interface ArbitrageResult {
 }
 
 const BOOKMAKERS: BookmakerInfo[] = [
-    { name: 'Unibet', fixedStake: 2000, hasBonus: true, actualCost: 1000, minOdds: 1.4, isActive: true, bonusType: 'matchingBonus', bonusAmount: 1000, bonusMinOdds: 1.4, qualifyingBetAmount: 1000, usedInBet1: true },
-    { name: 'Bet365', fixedStake: 1000, hasBonus: false, actualCost: 1000, minOdds: 1.2, isActive: true, bonusType: 'freebet', bonusAmount: 1000, bonusMinOdds: 1.2, qualifyingBetAmount: 1000, usedInBet1: true },
-    { name: 'LeoVegas', fixedStake: 500, hasBonus: false, actualCost: 500, minOdds: 1.8, isActive: true, bonusType: 'freebet', bonusAmount: 500, bonusMinOdds: 1.8, qualifyingBetAmount: 500, usedInBet1: true },
-    { name: 'ComeOn', fixedStake: 2000, hasBonus: true, actualCost: 1000, minOdds: 1.8, preferLoss: true, isActive: true, bonusType: 'matchingBonus', bonusAmount: 1000, bonusMinOdds: 1.8, qualifyingBetAmount: 1000, usedInBet1: true },
-    { name: 'NordicBet', fixedStake: 500, hasBonus: false, actualCost: 500, minOdds: 1.8, isActive: true, bonusType: 'freebet', bonusAmount: 500, bonusMinOdds: 1.8, qualifyingBetAmount: 500, usedInBet1: true },
-    { name: '888sport', fixedStake: 600, hasBonus: true, actualCost: 500, minOdds: 1.8, isActive: true, bonusType: 'freebet', bonusAmount: 500, bonusMinOdds: 1.8, qualifyingBetAmount: 500, usedInBet1: true },
-    { name: 'Bet25', fixedStake: 250, hasBonus: false, actualCost: 250, minOdds: 1.5, isActive: true, bonusType: 'freebet', bonusAmount: 250, bonusMinOdds: 1.5, qualifyingBetAmount: 250, usedInBet1: true },
-    { name: 'Expekt', fixedStake: 600, hasBonus: false, actualCost: 600, minOdds: 1.8, isActive: true, bonusType: 'freebet', bonusAmount: 600, bonusMinOdds: 1.8, qualifyingBetAmount: 600, usedInBet1: true },
-    { name: 'Cashpoint', fixedStake: 500, hasBonus: false, actualCost: 500, minOdds: 1.8, isActive: true, bonusType: 'freebet', bonusAmount: 500, bonusMinOdds: 1.8, qualifyingBetAmount: 500, usedInBet1: true },
-    { name: 'Jackpotbet', fixedStake: 2000, hasBonus: true, actualCost: 1000, minOdds: 1.5, isActive: true, bonusType: 'matchingBonus', bonusAmount: 1000, bonusMinOdds: 1.5, qualifyingBetAmount: 1000, usedInBet1: true },
-    { name: 'Tipwin', fixedStake: 1600, hasBonus: true, actualCost: 800, minOdds: 1.5, avoidWin: true, isActive: true, bonusType: 'matchingBonus', bonusAmount: 800, bonusMinOdds: 1.5, qualifyingBetAmount: 800, usedInBet1: true },
-    { name: 'Betano', fixedStake: 2000, hasBonus: true, actualCost: 1000, minOdds: 1.8, isActive: true, bonusType: 'matchingBonus', bonusAmount: 1000, bonusMinOdds: 1.8, qualifyingBetAmount: 1000, usedInBet1: true },
-    { name: 'Mrgreen', fixedStake: 400, hasBonus: true, actualCost: 300, minOdds: 2.0, isActive: true, bonusType: 'freebet', bonusAmount: 300, bonusMinOdds: 2.0, qualifyingBetAmount: 300, usedInBet1: true },
-    { name: "Mrplay", fixedStake: 2000, hasBonus: true, actualCost: 1000, minOdds: 2.0, isActive: true, bonusType: 'matchingBonus', bonusAmount: 1000, bonusMinOdds: 2.0, qualifyingBetAmount: 1000, usedInBet1: true }
+    { name: 'Unibet', fixedStake: 2000, hasBonus: true, actualCost: 1000, minOdds: 1.4, isActive: true, bonusType: 'matchingBonus', bonusAmount: 1000, bonusMinOdds: 1.4, qualifyingBetAmount: 1000, usedInBet1: true, bonusOnlyIfLost: false },
+    { name: 'Bet365', fixedStake: 1000, hasBonus: false, actualCost: 1000, minOdds: 1.2, isActive: true, bonusType: 'freebet', bonusAmount: 1000, bonusMinOdds: 1.2, qualifyingBetAmount: 1000, usedInBet1: true, bonusOnlyIfLost: false },
+    { name: 'LeoVegas', fixedStake: 1000, hasBonus: false, actualCost: 1000, minOdds: 1.8, isActive: true, bonusType: 'freebet', bonusAmount: 1000, bonusMinOdds: 1.8, qualifyingBetAmount: 1000, usedInBet1: true, bonusOnlyIfLost: true },
+    { name: 'ComeOn', fixedStake: 2000, hasBonus: true, actualCost: 1000, minOdds: 1.8, preferLoss: true, isActive: true, bonusType: 'matchingBonus', bonusAmount: 1000, bonusMinOdds: 1.8, qualifyingBetAmount: 1000, usedInBet1: true, bonusOnlyIfLost: false },
+    { name: 'Mr Green', fixedStake: 300, hasBonus: false, actualCost: 300, minOdds: 1.8, isActive: true, bonusType: 'freebet', bonusAmount: 300, bonusMinOdds: 1.8, qualifyingBetAmount: 300, usedInBet1: true, bonusOnlyIfLost: false },
+    { name: 'NordicBet', fixedStake: 500, hasBonus: false, actualCost: 500, minOdds: 1.8, isActive: true, bonusType: 'freebet', bonusAmount: 500, bonusMinOdds: 1.8, qualifyingBetAmount: 500, usedInBet1: true, bonusOnlyIfLost: false },
+    { name: 'Bwin', fixedStake: 1000, hasBonus: false, actualCost: 1000, minOdds: 1.8, isActive: true, bonusType: 'freebet', bonusAmount: 1000, bonusMinOdds: 1.8, qualifyingBetAmount: 1000, usedInBet1: true, bonusOnlyIfLost: false },
+    { name: '888sport', fixedStake: 500, hasBonus: false, actualCost: 500, minOdds: 2.0, isActive: true, bonusType: 'freebet', bonusAmount: 500, bonusMinOdds: 2.0, qualifyingBetAmount: 500, usedInBet1: true, bonusOnlyIfLost: false },
+    { name: 'Bet25', fixedStake: 250, hasBonus: false, actualCost: 250, minOdds: 1.95, isActive: true, bonusType: 'matchingBonus', bonusAmount: 250, bonusMinOdds: 1.95, qualifyingBetAmount: 250, usedInBet1: true, bonusOnlyIfLost: false },
+    { name: 'Expekt', fixedStake: 1000, hasBonus: false, actualCost: 1000, minOdds: 1.5, isActive: true, bonusType: 'freebet', bonusAmount: 1000, bonusMinOdds: 1.5, qualifyingBetAmount: 1000, usedInBet1: true, bonusOnlyIfLost: true },
+    { name: 'Cashpoint', fixedStake: 500, hasBonus: false, actualCost: 500, minOdds: 1.8, isActive: true, bonusType: 'freebet', bonusAmount: 500, bonusMinOdds: 1.8, qualifyingBetAmount: 500, usedInBet1: true, bonusOnlyIfLost: false },
+    { name: 'Jackpotbet', fixedStake: 500, hasBonus: false, actualCost: 500, minOdds: 1.5, isActive: true, bonusType: 'matchingBonus', bonusAmount: 500, bonusMinOdds: 1.5, qualifyingBetAmount: 500, usedInBet1: true, bonusOnlyIfLost: false },
+    { name: 'Getlucky', fixedStake: 100, hasBonus: false, actualCost: 100, minOdds: 1.8, isActive: true, bonusType: 'freebet', bonusAmount: 100, bonusMinOdds: 1.8, qualifyingBetAmount: 100, usedInBet1: true, bonusOnlyIfLost: false }
 ];
 
 // Global state
@@ -473,6 +474,21 @@ function calculateArbitrage(oddsData: BookmakerOdds[]): ArbitrageResult {
                         penalty += 10000; // Stor straf hvis odds er under minimum for bonus
                     }
                 }
+
+                // Specialregel for "kun hvis tabt" bonusser - vi vil gerne tabe på disse bookmakere
+                if (bookmakerInfo?.bonusOnlyIfLost && bookmakerInfo.bonusType === 'freebet') {
+                    // Find den højeste odds (underdog) for denne bookmaker
+                    const team1Odds = bm.team1 || 0;
+                    const team2Odds = bm.team2 || 0;
+                    const underdogType = team1Odds >= team2Odds ? 'team1' : 'team2';
+                    
+                    // Hvis vi spiller på underdog'en (laveste sandsynlighed for gevinst), giv bonus
+                    if (bm.betType === underdogType) {
+                        penalty -= 2000; // Bonus for at spille på underdog'en
+                    } else {
+                        penalty += 5000; // Straf for at spille på favoritten
+                    }
+                }
             });
         }
 
@@ -512,10 +528,6 @@ function calculateArbitrage(oddsData: BookmakerOdds[]): ArbitrageResult {
             }
         }
 
-        const tipwinBet = [...team1, ...draw, ...team2].find(bm => bm.name === 'Tipwin');
-        if (tipwinBet && tipwinBet.betType !== 'draw') {
-            penalty += 50000;
-        }
 
         return baseDeviation + penalty;
     };
@@ -537,13 +549,8 @@ function calculateArbitrage(oddsData: BookmakerOdds[]): ArbitrageResult {
         const currentDraw = draw.reduce((sum, bm) => sum + bm.draw * bm.fixedStake, 0);
         const currentTeam2 = team2.reduce((sum, bm) => sum + bm.team2 * bm.fixedStake, 0);
 
-        // Specialhåndtering for Tipwin - skal altid på uafgjort
-        if (current.name === 'Tipwin') {
-            if (current.draw > 0) { // Kun hvis der er et gyldigt uafgjort odds
-                tryDistribution(rest, team1, [...draw, current], team2);
-            }
-            return;
-        } else if (current.name === 'ComeOn') {
+        // Specialhåndtering for ComeOn - skal altid på det modsatte hold af favoritten
+        if (current.name === 'ComeOn') {
             const team1Odds = current.team1 || Infinity;
             const team2Odds = current.team2 || Infinity;
             
@@ -851,6 +858,7 @@ function createBookmakerInputs(): void {
         const bookmakerId = generateBookmakerId(bookmaker.name);
         const div = document.createElement('div');
         div.className = 'bookmaker-card';
+        div.setAttribute('data-bookmaker', bookmakerId);
 
         // Brug type guard til at bestemme odds
         const odds = bookmaker.odds || { team1: 0, draw: 0, team2: 0 };
@@ -876,6 +884,7 @@ function createBookmakerInputs(): void {
                                     ${bookmaker.bonusType === 'freebet' ? 'Freebet' : 'Matching Bonus'}: 
                                     ${bookmaker.bonusAmount} DKK
                                     ${bookmaker.isBonusLocked ? '🔒' : '✓'}
+                                    ${bookmaker.bonusOnlyIfLost ? ' (kun hvis tabt)' : ''}
                                 </span>
                                 ${isBet2 ? `
                                     <label class="flex items-center gap-1">
@@ -889,6 +898,7 @@ function createBookmakerInputs(): void {
                             </div>
                             <span class="text-xs text-gray-600 block">
                                 Kræver ${bookmaker.qualifyingBetAmount} DKK kvalificerende bet med min. odds ${bookmaker.bonusMinOdds}
+                                ${bookmaker.bonusOnlyIfLost ? ' - Bonus kun hvis kvalificerende bet tabes (spil på underdog)' : ''}
                             </span>
                             ${isBet2 ? `
                                 <div class="mt-2">
@@ -903,15 +913,53 @@ function createBookmakerInputs(): void {
                                                    ${!bookmaker.usedInBet1 ? 'disabled' : ''}>
                                         </div>
                                     ` : bookmaker.bonusType === 'freebet' ? `
-                                        <div class="flex items-center gap-2">
-                                            <label class="text-sm text-gray-600">Gevinst fra Bet 1:</label>
-                                            <input type="number" 
-                                                   id="${bookmakerId}-bet1-profit" 
-                                                   class="input-field w-32" 
-                                                   value="${bookmaker.bet1Profit || ''}"
-                                                   placeholder="DKK">
-                                            <div class="text-xs text-gray-500 ml-2">
-                                                ${bookmaker.usedInBet1 ? `(Freebet: ${bookmaker.bonusAmount} DKK)` : '(Ikke brugt i Bet 1)'}
+                                        <div class="space-y-2">
+                                            ${bookmaker.bonusOnlyIfLost ? `
+                                                 <div class="space-y-2">
+                                                     <div class="flex items-center gap-2">
+                                                         <label class="text-sm text-gray-600">Bet 1 resultat:</label>
+                                                         <div class="flex items-center gap-2">
+                                                             <label class="flex items-center gap-1">
+                                                                 <input type="radio" 
+                                                                        name="${bookmakerId}-bet1-result"
+                                                                        value="lost"
+                                                                        class="form-radio h-4 w-4 text-red-600"
+                                                                        ${bookmaker.bet1Lost === true ? 'checked' : ''}>
+                                                                 <span class="text-sm text-red-600">Tabt</span>
+                                                             </label>
+                                                             <label class="flex items-center gap-1">
+                                                                 <input type="radio" 
+                                                                        name="${bookmakerId}-bet1-result"
+                                                                        value="won"
+                                                                        class="form-radio h-4 w-4 text-green-600"
+                                                                        ${bookmaker.bet1Lost === false ? 'checked' : ''}>
+                                                                 <span class="text-sm text-green-600">Vundet</span>
+                                                             </label>
+                                                         </div>
+                                                     </div>
+                                                     <div class="text-xs text-gray-600 bg-blue-50 p-2 rounded border-l-4 border-blue-400">
+                                                         <strong>💡 Freebet betingelse:</strong> 
+                                                         <span class="freebet-status">
+                                                             ${bookmaker.bet1Lost === true ? 
+                                                                 '<span class="text-green-600 font-medium">✓ Freebet er tilgængelig (Bet 1 blev tabt)</span>' : 
+                                                                 bookmaker.bet1Lost === false ? 
+                                                                     '<span class="text-red-600 font-medium">✗ Freebet ikke tilgængelig (Bet 1 blev vundet)</span>' :
+                                                                     '<span class="text-gray-500">Vælg Bet 1 resultat for at se om freebet er tilgængelig</span>'
+                                                             }
+                                                         </span>
+                                                     </div>
+                                                 </div>
+                                            ` : ''}
+                                            <div class="flex items-center gap-2">
+                                                <label class="text-sm text-gray-600">Gevinst fra Bet 1:</label>
+                                                <input type="number" 
+                                                       id="${bookmakerId}-bet1-profit" 
+                                                       class="input-field w-32" 
+                                                       value="${bookmaker.bet1Profit || ''}"
+                                                       placeholder="DKK">
+                                                <div class="text-xs text-gray-500 ml-2">
+                                                    ${bookmaker.usedInBet1 ? `(Freebet: ${bookmaker.bonusAmount} DKK)` : '(Ikke brugt i Bet 1)'}
+                                                </div>
                                             </div>
                                         </div>
                                     ` : ''}
@@ -995,6 +1043,40 @@ function createBookmakerInputs(): void {
                         const value = parseFloat(profitInput.value) || 0;
                         bookmaker.bet1Profit = value;
                     });
+                }
+
+                // Tilføj event listeners for Bet 1 resultat radio buttons
+                if (bookmaker.bonusOnlyIfLost) {
+                    const lostRadio = document.querySelector(`input[name="${bookmakerId}-bet1-result"][value="lost"]`) as HTMLInputElement;
+                    const wonRadio = document.querySelector(`input[name="${bookmakerId}-bet1-result"][value="won"]`) as HTMLInputElement;
+                    
+                    const updateFreebetStatus = () => {
+                        // Find status besked elementet og opdater det
+                        const statusElement = document.querySelector(`[data-bookmaker="${bookmakerId}"] .freebet-status`);
+                        if (statusElement) {
+                            if (bookmaker.bet1Lost === true) {
+                                statusElement.innerHTML = '<span class="text-green-600 font-medium">✓ Freebet er tilgængelig (Bet 1 blev tabt)</span>';
+                            } else if (bookmaker.bet1Lost === false) {
+                                statusElement.innerHTML = '<span class="text-red-600 font-medium">✗ Freebet ikke tilgængelig (Bet 1 blev vundet)</span>';
+                            } else {
+                                statusElement.innerHTML = '<span class="text-gray-500">Vælg Bet 1 resultat for at se om freebet er tilgængelig</span>';
+                            }
+                        }
+                    };
+                    
+                    if (lostRadio) {
+                        lostRadio.addEventListener('change', () => {
+                            bookmaker.bet1Lost = true;
+                            updateFreebetStatus();
+                        });
+                    }
+                    
+                    if (wonRadio) {
+                        wonRadio.addEventListener('change', () => {
+                            bookmaker.bet1Lost = false;
+                            updateFreebetStatus();
+                        });
+                    }
                 }
             }
         }
@@ -1085,10 +1167,17 @@ function gatherOddsData(): BookmakerOdds[] {
                 // Actual cost skal være lig med den oprindelige indbetaling, uanset saldo
                 actualCost = bookmaker.qualifyingBetAmount || 0;
             } else if (bookmaker.bonusType === 'freebet') {
-                // For freebets, brug bonus beløbet
-                stake = bookmaker.bonusAmount || 0;
-                // Actual cost skal være lig med freebet beløbet
-                actualCost = bookmaker.bonusAmount || 0;
+                // For freebets, tjek om bonus er tilgængelig
+                if (bookmaker.bonusOnlyIfLost && bookmaker.bet1Lost === false) {
+                    // Hvis bonus kun gives ved tab, men vi vandt, så ingen bonus
+                    stake = 0;
+                    actualCost = 0;
+                } else {
+                    // For freebets, brug bonus beløbet
+                    stake = bookmaker.bonusAmount || 0;
+                    // Actual cost skal være lig med freebet beløbet
+                    actualCost = bookmaker.bonusAmount || 0;
+                }
             }
         }
 

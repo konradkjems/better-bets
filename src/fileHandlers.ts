@@ -28,11 +28,36 @@ export function handleFileUpload(event: Event) {
         return;
     }
 
+    // Valider filtype
+    const validTypes = ['text/csv', 'application/csv', 'text/plain'];
+    const validExtensions = ['.csv'];
+    const fileExtension = file.name.toLowerCase().substring(file.name.lastIndexOf('.'));
+    
+    if (!validTypes.includes(file.type) && !validExtensions.includes(fileExtension)) {
+        alert('Venligst vælg en CSV fil (.csv). Den valgte fil er ikke en gyldig CSV fil.');
+        input.value = ''; // Ryd input feltet
+        return;
+    }
+
+    // Valider filstørrelse (max 1MB)
+    const maxSize = 1024 * 1024; // 1MB
+    if (file.size > maxSize) {
+        alert('Filen er for stor. Maksimal størrelse er 1MB.');
+        input.value = '';
+        return;
+    }
+
     const reader = new FileReader();
     reader.onload = (e) => {
         const text = e.target?.result as string;
         if (!text) {
             alert('Kunne ikke læse filen');
+            return;
+        }
+
+        // Valider at filen ikke er tom
+        if (text.trim().length === 0) {
+            alert('CSV filen er tom');
             return;
         }
 
@@ -44,21 +69,22 @@ export function handleFileUpload(event: Event) {
         console.log('Linjer efter split:', lines);
         
         if (lines.length < 2) {
-            alert('CSV filen er tom eller mangler data');
+            alert('CSV filen mangler data. Der skal være mindst en header række og en data række.');
             return;
         }
 
-        // Validér header
+        // Valider header format
         const headerRow = lines[0].toLowerCase();
-        if (!headerRow.includes('bookmaker') || 
-            !headerRow.includes('hold 1') || 
-            !headerRow.includes('uafgjort') || 
-            !headerRow.includes('hold 2')) {
-            alert('CSV filen har ikke det korrekte format. Brug venligst skabelonen.');
+        const requiredHeaders = ['bookmaker', 'hold 1', 'uafgjort', 'hold 2'];
+        const hasRequiredHeaders = requiredHeaders.every(header => headerRow.includes(header));
+        
+        if (!hasRequiredHeaders) {
+            alert(`CSV filen har ikke det korrekte format. Header skal indeholde: ${requiredHeaders.join(', ')}.\n\nBrug venligst skabelonen ved at klikke på "Download Skabelon".`);
             return;
         }
 
         let updatedCount = 0;
+        let errorCount = 0;
         
         // Start fra linje 1 for at skippe header
         for (let i = 1; i < lines.length; i++) {
@@ -80,6 +106,7 @@ export function handleFileUpload(event: Event) {
             
             if (!matchingBookmaker) {
                 console.warn(`Kunne ikke finde bookmaker: ${bookmaker}`);
+                errorCount++;
                 continue;
             }
             
@@ -90,6 +117,7 @@ export function handleFileUpload(event: Event) {
             
             if (!team1Input || !drawInput || !team2Input) {
                 console.warn(`Kunne ikke finde input felter for ${matchingBookmaker.name}`);
+                errorCount++;
                 continue;
             }
 
@@ -135,7 +163,11 @@ export function handleFileUpload(event: Event) {
         input.value = '';
 
         if (updatedCount > 0) {
-            alert(`CSV fil er blevet indlæst. Opdaterede odds for ${updatedCount} bookmakere.`);
+            let message = `CSV fil er blevet indlæst succesfuldt!\n\nOpdaterede odds for ${updatedCount} bookmakere.`;
+            if (errorCount > 0) {
+                message += `\n\n${errorCount} rækker kunne ikke behandles (ukendte bookmakere eller manglende data).`;
+            }
+            alert(message);
             
             // Trigger beregning automatisk efter upload
             const calculateButton = document.getElementById('calculateButton');
@@ -143,7 +175,7 @@ export function handleFileUpload(event: Event) {
                 calculateButton.click();
             }
         } else {
-            alert('Ingen odds blev opdateret. Tjek at CSV filen har det korrekte format.');
+            alert('Ingen odds blev opdateret. Tjek at CSV filen har det korrekte format og indeholder gyldige bookmakere.\n\nBrug venligst skabelonen ved at klikke på "Download Skabelon".');
         }
     };
     
