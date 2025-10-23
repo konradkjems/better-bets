@@ -498,7 +498,7 @@ export function Calculator() {
 
   const saveCalculation = async (calculationData: any) => {
     try {
-      // In development, just show success message
+      // In development, use mock response since Vite doesn't support serverless functions
       if (import.meta.env.DEV) {
         console.log('Would save calculation:', calculationData);
         return { message: 'Calculation saved (development mode)' };

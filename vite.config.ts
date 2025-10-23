@@ -30,7 +30,7 @@ export default defineConfig({
     },
     resolve: {
         alias: {
-            '/api': false
+            '/api': './api'
         }
     },
     publicDir: false,

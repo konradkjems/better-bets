@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "@clerk/clerk-react": "^5.53.3",
-    "@clerk/clerk-sdk-node": "^4.13.23",
+    "@clerk/express": "^1.7.42",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
     "@vercel/analytics": "^1.4.1",

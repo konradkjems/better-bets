@@ -34,8 +34,10 @@ export function CalculationHistory({ onLoadCalculation }: CalculationHistoryProp
     try {
       setLoading(true);
       
-      // In development, show mock data instead of calling API
+      // In development, use mock data since Vite doesn't support serverless functions
       if (import.meta.env.DEV) {
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 500));
         setCalculations([]);
         setLoading(false);
         return;
