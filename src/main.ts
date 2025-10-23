@@ -1,4 +1,5 @@
 import './style.css';
+import { BookmakerCard } from './components/BookmakerCard';
 
 interface BookmakerInfo {
     name: string;
@@ -50,7 +51,7 @@ export interface BookmakerOdds {
     };
 }
 
-interface CustomerBookmaker extends BookmakerInfo {
+export interface CustomerBookmaker extends BookmakerInfo {
     odds?: {
         team1: number;
         draw: number;
@@ -59,6 +60,8 @@ interface CustomerBookmaker extends BookmakerInfo {
     bet1Balance?: number;  // Saldo fra Bet 1
     bet1Profit?: number;   // Profit fra Bet 1 (for freebet sider)
     usedInBet1?: boolean;  // Om siden blev brugt i Bet 1
+    bet1Result?: 'won' | 'lost' | 'unknown';  // Resultat af Bet 1
+    bet2Result?: 'won' | 'lost' | 'unknown';  // Resultat af Bet 2
 }
 
 interface Customer {
@@ -93,6 +96,32 @@ interface ArbitrageResult {
     isArbitrage: boolean;
 }
 
+interface CalculationHistory {
+    id: string;
+    timestamp: Date;
+    teamNames: TeamNames;
+    betType: 'qualifying' | 'bonus';
+    result: ArbitrageResult;
+    bookmakersUsed: string[];
+    profit: number;
+    profitPercentage: number;
+    customerId: string;
+    oddsData?: BookmakerOdds[]; // Store the odds data used for this calculation
+}
+
+interface User {
+    id: string;
+    name: string;
+    email: string;
+    customers: Customer[];
+    calculationHistory: CalculationHistory[];
+    preferences: {
+        darkMode: boolean;
+        defaultBookmakers: string[];
+        autoSave: boolean;
+    };
+}
+
 const BOOKMAKERS: BookmakerInfo[] = [
     { name: 'Unibet', fixedStake: 2000, hasBonus: true, actualCost: 1000, minOdds: 1.4, isActive: true, bonusType: 'matchingBonus', bonusAmount: 1000, bonusMinOdds: 1.4, qualifyingBetAmount: 1000, usedInBet1: true, bonusOnlyIfLost: false },
     { name: 'Bet365', fixedStake: 1000, hasBonus: false, actualCost: 1000, minOdds: 1.2, isActive: true, bonusType: 'freebet', bonusAmount: 1000, bonusMinOdds: 1.2, qualifyingBetAmount: 1000, usedInBet1: true, bonusOnlyIfLost: false },
@@ -105,7 +134,7 @@ const BOOKMAKERS: BookmakerInfo[] = [
     { name: 'Bet25', fixedStake: 250, hasBonus: false, actualCost: 250, minOdds: 1.95, isActive: true, bonusType: 'matchingBonus', bonusAmount: 250, bonusMinOdds: 1.95, qualifyingBetAmount: 250, usedInBet1: true, bonusOnlyIfLost: false },
     { name: 'Expekt', fixedStake: 1000, hasBonus: false, actualCost: 1000, minOdds: 1.5, isActive: true, bonusType: 'freebet', bonusAmount: 1000, bonusMinOdds: 1.5, qualifyingBetAmount: 1000, usedInBet1: true, bonusOnlyIfLost: true },
     { name: 'Cashpoint', fixedStake: 500, hasBonus: false, actualCost: 500, minOdds: 1.8, isActive: true, bonusType: 'freebet', bonusAmount: 500, bonusMinOdds: 1.8, qualifyingBetAmount: 500, usedInBet1: true, bonusOnlyIfLost: false },
-    { name: 'Jackpotbet', fixedStake: 500, hasBonus: false, actualCost: 500, minOdds: 1.5, isActive: true, bonusType: 'matchingBonus', bonusAmount: 500, bonusMinOdds: 1.5, qualifyingBetAmount: 500, usedInBet1: true, bonusOnlyIfLost: false },
+    { name: 'Jackpotbet', fixedStake: 1000, hasBonus: true, actualCost: 500, minOdds: 1.5, isActive: true, bonusType: 'matchingBonus', bonusAmount: 500, bonusMinOdds: 1.5, qualifyingBetAmount: 500, usedInBet1: true, bonusOnlyIfLost: false },
     { name: 'Getlucky', fixedStake: 100, hasBonus: false, actualCost: 100, minOdds: 1.8, isActive: true, bonusType: 'freebet', bonusAmount: 100, bonusMinOdds: 1.8, qualifyingBetAmount: 100, usedInBet1: true, bonusOnlyIfLost: false }
 ];
 
@@ -114,13 +143,453 @@ let customers: Customer[] = [];
 let currentCustomerId: string | null = null;
 let currentBetType: 'qualifying' | 'bonus' = 'qualifying';
 let lastCalculatedResult: ArbitrageResult | null = null;
+let currentUser: User | null = null;
+let calculationHistory: CalculationHistory[] = [];
+let isDarkMode: boolean = false;
+
+// LocalStorage Management Functions
+function initializeUser(): User {
+    const defaultUser: User = {
+        id: 'default-user',
+        name: 'Better Bets User',
+        email: 'user@betterbets.com',
+        customers: [],
+        calculationHistory: [],
+        preferences: {
+            darkMode: false,
+            defaultBookmakers: ['Unibet', 'Bet365', 'LeoVegas'],
+            autoSave: true
+        }
+    };
+    
+    return defaultUser;
+}
+
+function loadFromLocalStorage(): void {
+    try {
+        // Load user preferences
+        const savedPreferences = localStorage.getItem('bb_user_preferences');
+        if (savedPreferences) {
+            const prefs = JSON.parse(savedPreferences);
+            isDarkMode = prefs.darkMode || false;
+        }
+
+        // Load calculation history
+        const savedHistory = localStorage.getItem('bb_calculation_history');
+        if (savedHistory) {
+            calculationHistory = JSON.parse(savedHistory).map((item: any) => ({
+                ...item,
+                timestamp: new Date(item.timestamp)
+            }));
+        }
+
+        // Load current session
+        const savedSession = localStorage.getItem('bb_current_session');
+        if (savedSession) {
+            const session = JSON.parse(savedSession);
+            customers = session.customers || [];
+            currentCustomerId = session.currentCustomerId || null;
+            currentBetType = session.currentBetType || 'qualifying';
+        }
+
+        // Initialize user if not exists
+        if (!currentUser) {
+            currentUser = initializeUser();
+            currentUser.calculationHistory = calculationHistory;
+        }
+    } catch (error) {
+        console.error('Error loading from localStorage:', error);
+        // Initialize with defaults
+        currentUser = initializeUser();
+        calculationHistory = [];
+    }
+}
+
+function saveToLocalStorage(): void {
+    try {
+        // Save user preferences
+        localStorage.setItem('bb_user_preferences', JSON.stringify({
+            darkMode: isDarkMode,
+            defaultBookmakers: currentUser?.preferences.defaultBookmakers || [],
+            autoSave: currentUser?.preferences.autoSave || true
+        }));
+
+        // Save calculation history (max 100 entries)
+        const historyToSave = calculationHistory.slice(-100);
+        localStorage.setItem('bb_calculation_history', JSON.stringify(historyToSave));
+
+        // Save current session
+        localStorage.setItem('bb_current_session', JSON.stringify({
+            customers,
+            currentCustomerId,
+            currentBetType,
+            lastModified: new Date()
+        }));
+    } catch (error) {
+        console.error('Error saving to localStorage:', error);
+    }
+}
+
+function saveCalculationToHistory(result: ArbitrageResult, teamNames: TeamNames, betType: 'qualifying' | 'bonus'): void {
+    if (!currentUser || !currentUser.preferences.autoSave) return;
+
+    // Gather the current odds data
+    const oddsData = gatherOddsData();
+
+    const historyEntry: CalculationHistory = {
+        id: `calc_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        timestamp: new Date(),
+        teamNames,
+        betType,
+        result,
+        bookmakersUsed: result.allBookmakers.map(bm => bm.name),
+        profit: result.profit,
+        profitPercentage: result.profitPercentage,
+        customerId: currentCustomerId || 'default',
+        oddsData: oddsData // Store the odds data
+    };
+
+    calculationHistory.unshift(historyEntry);
+    
+    // Keep only last 100 calculations
+    if (calculationHistory.length > 100) {
+        calculationHistory = calculationHistory.slice(0, 100);
+    }
+
+    if (currentUser) {
+        currentUser.calculationHistory = calculationHistory;
+    }
+
+    saveToLocalStorage();
+    
+    // Update history UI if it exists
+    updateHistoryUI();
+}
+
+function loadCalculationFromHistory(historyId: string): boolean {
+    const historyEntry = calculationHistory.find(entry => entry.id === historyId);
+    if (!historyEntry) return false;
+
+    // Restore the calculation
+    lastCalculatedResult = historyEntry.result;
+    
+    // Find or create customer
+    let customer = customers.find(c => c.id === historyEntry.customerId);
+    if (!customer) {
+        customer = {
+            id: historyEntry.customerId,
+            name: `Customer ${historyEntry.customerId}`,
+            bookmakers: BOOKMAKERS.map(bm => ({ ...bm })),
+            teamNames: historyEntry.teamNames,
+            betType: historyEntry.betType
+        };
+        customers.push(customer);
+    } else {
+        // Update existing customer with the loaded data
+        customer.teamNames = historyEntry.teamNames;
+        customer.betType = historyEntry.betType;
+    }
+
+    // Restore odds data if available
+    if (historyEntry.oddsData) {
+        historyEntry.oddsData.forEach(oddsData => {
+            const bookmaker = customer.bookmakers.find(bm => bm.name === oddsData.name);
+            if (bookmaker) {
+                // Update the bookmaker with the saved odds
+                bookmaker.odds = {
+                    team1: oddsData.team1,
+                    draw: oddsData.draw,
+                    team2: oddsData.team2
+                };
+                bookmaker.isActive = oddsData.isActive;
+            }
+        });
+    }
+
+    // Set current customer and bet type
+    currentCustomerId = customer.id;
+    currentBetType = historyEntry.betType;
+
+    // Save the updated customer data
+    saveToLocalStorage();
+
+    // Update UI
+    createCustomerSelector();
+    createBookmakerInputs();
+    if (lastCalculatedResult) {
+        updateUI(lastCalculatedResult);
+    }
+
+    return true;
+}
+
+function deleteCalculationFromHistory(historyId: string): void {
+    calculationHistory = calculationHistory.filter(entry => entry.id !== historyId);
+    
+    if (currentUser) {
+        currentUser.calculationHistory = calculationHistory;
+    }
+
+    saveToLocalStorage();
+    updateHistoryUI();
+}
+
+function toggleDarkMode(): void {
+    isDarkMode = !isDarkMode;
+    document.documentElement.setAttribute('data-theme', isDarkMode ? 'dark' : 'light');
+    
+    if (currentUser) {
+        currentUser.preferences.darkMode = isDarkMode;
+    }
+    
+    saveToLocalStorage();
+}
+
+
+function updateHistoryUI(): void {
+    // Update history trigger badge
+    const historyTrigger = document.querySelector('.history-trigger .badge') as HTMLElement;
+    if (historyTrigger) {
+        historyTrigger.textContent = calculationHistory.length.toString();
+    }
+    
+    // Update history panel if it exists
+    updateHistoryPanel();
+}
+
+function initializeThemeToggle(): void {
+    const themeToggle = document.getElementById('themeToggle');
+    if (themeToggle) {
+        themeToggle.addEventListener('click', () => {
+            toggleDarkMode();
+            updateThemeToggleButton();
+        });
+        updateThemeToggleButton();
+    }
+}
+
+function updateThemeToggleButton(): void {
+    const themeToggle = document.getElementById('themeToggle');
+    if (!themeToggle) return;
+    
+    const icon = themeToggle.querySelector('svg');
+    const text = themeToggle.querySelector('.theme-text');
+    
+    if (isDarkMode) {
+        if (icon) {
+            icon.innerHTML = `
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+            `;
+        }
+        if (text) {
+            text.textContent = 'Light Mode';
+        }
+    } else {
+        if (icon) {
+            icon.innerHTML = `
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+            `;
+        }
+        if (text) {
+            text.textContent = 'Dark Mode';
+        }
+    }
+}
+
+
+function initializeHistoryPanel(): void {
+    const historyTrigger = document.querySelector('.history-trigger');
+    const historyPanel = document.getElementById('historyPanel');
+    const closeHistory = document.getElementById('closeHistory');
+    
+    if (historyTrigger && historyPanel) {
+        historyTrigger.addEventListener('click', () => {
+            historyPanel.classList.toggle('closed');
+            historyPanel.classList.toggle('open');
+        });
+    }
+    
+    if (closeHistory && historyPanel) {
+        closeHistory.addEventListener('click', () => {
+            historyPanel.classList.add('closed');
+            historyPanel.classList.remove('open');
+        });
+    }
+    
+    // Initialize filters
+    const timeFilter = document.getElementById('timeFilter') as HTMLSelectElement;
+    const typeFilter = document.getElementById('typeFilter') as HTMLSelectElement;
+    const searchHistory = document.getElementById('searchHistory') as HTMLInputElement;
+    
+    [timeFilter, typeFilter, searchHistory].forEach(element => {
+        element?.addEventListener('change', updateHistoryPanel);
+        element?.addEventListener('input', updateHistoryPanel);
+    });
+    
+    updateHistoryPanel();
+}
+
+function updateHistoryPanel(): void {
+    const historyList = document.getElementById('historyList');
+    const totalCalculations = document.getElementById('totalCalculations');
+    const totalProfit = document.getElementById('totalProfit');
+    const avgROI = document.getElementById('avgROI');
+    
+    if (!historyList) return;
+    
+    // Get filter values
+    const timeFilter = (document.getElementById('timeFilter') as HTMLSelectElement)?.value || 'all';
+    const typeFilter = (document.getElementById('typeFilter') as HTMLSelectElement)?.value || 'all';
+    const searchQuery = (document.getElementById('searchHistory') as HTMLInputElement)?.value || '';
+    
+    // Filter history
+    let filteredHistory = calculationHistory;
+    
+    if (timeFilter !== 'all') {
+        const now = new Date();
+        const filterDate = new Date();
+        
+        switch (timeFilter) {
+            case 'today':
+                filterDate.setHours(0, 0, 0, 0);
+                break;
+            case 'week':
+                filterDate.setDate(now.getDate() - 7);
+                break;
+            case 'month':
+                filterDate.setDate(now.getDate() - 30);
+                break;
+        }
+        
+        filteredHistory = filteredHistory.filter(item => item.timestamp >= filterDate);
+    }
+    
+    if (typeFilter !== 'all') {
+        filteredHistory = filteredHistory.filter(item => item.betType === typeFilter);
+    }
+    
+    if (searchQuery.trim()) {
+        const query = searchQuery.toLowerCase();
+        filteredHistory = filteredHistory.filter(item => 
+            item.teamNames.team1.toLowerCase().includes(query) ||
+            item.teamNames.team2.toLowerCase().includes(query) ||
+            item.bookmakersUsed.some(bm => bm.toLowerCase().includes(query))
+        );
+    }
+    
+    // Render history list
+    if (filteredHistory.length === 0) {
+        historyList.innerHTML = `
+            <div class="text-center text-gray-500 py-8">
+                <svg class="w-12 h-12 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <p>No calculations found</p>
+                <p class="text-sm">Try adjusting your filters</p>
+            </div>
+        `;
+    } else {
+        historyList.innerHTML = filteredHistory.map(item => `
+            <div class="history-item p-4 mb-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm text-gray-500">${formatRelativeTime(item.timestamp)}</span>
+                    <span class="text-sm font-semibold ${item.profit >= 0 ? 'text-green-600' : 'text-red-600'}">
+                        ${item.profit >= 0 ? '+' : ''}${item.profit.toFixed(0)} DKK
+                    </span>
+                </div>
+                <div class="mb-2">
+                    <span class="font-medium">${item.teamNames.team1} vs ${item.teamNames.team2}</span>
+                    <span class="ml-2 badge ${item.betType === 'qualifying' ? 'badge-primary' : 'badge-success'}">${item.betType}</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-600">${item.bookmakersUsed.length} bookmakers</span>
+                    <div class="flex gap-2">
+                        <button class="load-calculation text-xs btn-secondary px-2 py-1" data-id="${item.id}">Load</button>
+                        <button class="delete-calculation text-xs btn-secondary px-2 py-1 text-red-600" data-id="${item.id}">🗑️</button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+        
+        // Add event listeners for action buttons
+        historyList.querySelectorAll('.load-calculation').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const id = (e.target as HTMLElement).getAttribute('data-id');
+                if (id) {
+                    loadCalculationFromHistory(id);
+                    // Close history panel
+                    const historyPanel = document.getElementById('historyPanel');
+                    if (historyPanel) {
+                        historyPanel.classList.add('closed');
+                        historyPanel.classList.remove('open');
+                    }
+                }
+            });
+        });
+        
+        historyList.querySelectorAll('.delete-calculation').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const id = (e.target as HTMLElement).getAttribute('data-id');
+                if (id && confirm('Are you sure you want to delete this calculation?')) {
+                    deleteCalculationFromHistory(id);
+                }
+            });
+        });
+    }
+    
+    // Update stats
+    if (totalCalculations) {
+        totalCalculations.textContent = calculationHistory.length.toString();
+    }
+    
+    if (totalProfit) {
+        const total = calculationHistory.reduce((sum, item) => sum + item.profit, 0);
+        totalProfit.textContent = `${total >= 0 ? '+' : ''}${total.toFixed(0)} DKK`;
+        totalProfit.className = `font-semibold ${total >= 0 ? 'text-green-600' : 'text-red-600'}`;
+    }
+    
+    if (avgROI) {
+        const avg = calculationHistory.length > 0 
+            ? calculationHistory.reduce((sum, item) => sum + item.profitPercentage, 0) / calculationHistory.length 
+            : 0;
+        avgROI.textContent = `${avg.toFixed(1)}%`;
+    }
+}
+
+function formatRelativeTime(date: Date): string {
+    const now = new Date();
+    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+    if (diffInSeconds < 60) {
+        return 'Lige nu';
+    } else if (diffInSeconds < 3600) {
+        const minutes = Math.floor(diffInSeconds / 60);
+        return `${minutes} min siden`;
+    } else if (diffInSeconds < 86400) {
+        const hours = Math.floor(diffInSeconds / 3600);
+        return `${hours} time${hours > 1 ? 'r' : ''} siden`;
+    } else if (diffInSeconds < 604800) {
+        const days = Math.floor(diffInSeconds / 86400);
+        return `${days} dag${days > 1 ? 'e' : ''} siden`;
+    } else {
+        return date.toLocaleDateString('da-DK');
+    }
+}
 
 // Tilføj type definition for window
 declare global {
     interface Window {
         handleFileUpload: (event: Event) => void;
+        BookmakerCard: typeof BookmakerCard;
+        currentBetType: 'qualifying' | 'bonus';
+        customers: Customer[];
     }
 }
+
+// Make BookmakerCard available globally
+window.BookmakerCard = BookmakerCard;
+window.currentBetType = currentBetType;
+window.customers = customers;
 
 // Hjælpefunktioner til at håndtere kunder
 export function getCurrentCustomer(): Customer {
@@ -326,6 +795,11 @@ function createCustomerSelector() {
                     >
                 </div>
             </div>
+            <div class="flex justify-end mt-4">
+                <button id="continueToOddsButton" class="btn-primary">
+                    Fortsæt til odds
+                </button>
+            </div>
         </div>
     `;
 
@@ -339,6 +813,7 @@ function createCustomerSelector() {
     betTypeSelect?.addEventListener('change', (e) => {
         const newBetType = (e.target as HTMLSelectElement).value as 'qualifying' | 'bonus';
         currentBetType = newBetType;
+        window.currentBetType = currentBetType; // Update global reference
         const customer = getCurrentCustomer();
         if (customer) {
             customer.betType = newBetType;
@@ -348,6 +823,62 @@ function createCustomerSelector() {
             // Skjul resultater når der skiftes bet type
             const results = document.getElementById('results');
             if (results) results.classList.add('hidden');
+        }
+    });
+
+    const continueToOddsButton = document.getElementById('continueToOddsButton');
+    continueToOddsButton?.addEventListener('click', () => {
+        const team1Name = (document.getElementById('team1Name') as HTMLInputElement)?.value;
+        const team2Name = (document.getElementById('team2Name') as HTMLInputElement)?.value;
+
+        if (!team1Name || !team2Name) {
+            alert('Du skal indtaste navne på begge hold for at fortsætte');
+            return;
+        }
+
+        // Opdater kundens holdnavne
+        const customer = getCurrentCustomer();
+        if (customer) {
+            customer.teamNames = {
+                team1: team1Name,
+                team2: team2Name
+            };
+            saveToLocalStorage();
+            
+            // Opdater UI hvis der er et resultat
+            if (lastCalculatedResult) {
+                updateUI(lastCalculatedResult);
+            }
+            
+            // Sikr at bookmaker inputs er oprettet og synlige
+            createBookmakerInputs();
+            
+            // Scroll til odds sektionen og fokuser på første bookmaker
+            const bookmakerInputs = document.getElementById('bookmakerInputs');
+            if (bookmakerInputs) {
+                bookmakerInputs.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                
+                // Fokuser på første bookmaker input efter en kort forsinkelse
+                setTimeout(() => {
+                    const firstOddsInput = bookmakerInputs.querySelector('input[type="number"]') as HTMLInputElement;
+                    if (firstOddsInput) {
+                        firstOddsInput.focus();
+                    }
+                }, 500);
+            }
+            
+            // Vis en kort bekræftelse
+            const button = continueToOddsButton as HTMLButtonElement;
+            const originalText = button.textContent;
+            button.textContent = '✓ Fortsætter til odds...';
+            button.classList.add('bg-green-600', 'hover:bg-green-700');
+            button.classList.remove('btn-primary');
+            
+            setTimeout(() => {
+                button.textContent = originalText;
+                button.classList.remove('bg-green-600', 'hover:bg-green-700');
+                button.classList.add('btn-primary');
+            }, 2000);
         }
     });
 
@@ -378,7 +909,12 @@ function createCustomerSelector() {
 }
 
 export function generateBookmakerId(bookmakerName: string): string {
-    return bookmakerName.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+    // Ensure ID starts with a letter for valid CSS selector
+    let id = bookmakerName.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+    if (/^[0-9]/.test(id)) {
+        id = 'bm-' + id;
+    }
+    return id;
 }
 
 function calculateArbitrage(oddsData: BookmakerOdds[]): ArbitrageResult {
@@ -490,6 +1026,36 @@ function calculateArbitrage(oddsData: BookmakerOdds[]): ArbitrageResult {
                     }
                 }
             });
+
+            // Tjek for jævn fordeling af "kun hvis tab"-freebets
+            const onlyIfLostFreebets = [...team1, ...draw, ...team2].filter(bm => {
+                const bookmakerInfo = customer.bookmakers.find(b => b.name === bm.name);
+                return bookmakerInfo?.bonusOnlyIfLost && bookmakerInfo.bonusType === 'freebet';
+            });
+
+            if (onlyIfLostFreebets.length > 1) {
+                // Tæl hvor mange "kun hvis tab"-freebets der er på hvert udfald
+                const team1Count = onlyIfLostFreebets.filter(bm => bm.betType === 'team1').length;
+                const drawCount = onlyIfLostFreebets.filter(bm => bm.betType === 'draw').length;
+                const team2Count = onlyIfLostFreebets.filter(bm => bm.betType === 'team2').length;
+
+                // Beregn afvigelse fra jævn fordeling
+                const totalCount = onlyIfLostFreebets.length;
+                const expectedPerOutcome = totalCount / 3;
+                
+                const team1Deviation = Math.abs(team1Count - expectedPerOutcome);
+                const drawDeviation = Math.abs(drawCount - expectedPerOutcome);
+                const team2Deviation = Math.abs(team2Count - expectedPerOutcome);
+
+                // Straf for ujævn fordeling - jo større afvigelse, jo større straf
+                const distributionPenalty = (team1Deviation + drawDeviation + team2Deviation) * 10000;
+                penalty += distributionPenalty;
+
+                // Ekstra straf hvis alle "kun hvis tab"-freebets er på samme udfald
+                if (team1Count === totalCount || drawCount === totalCount || team2Count === totalCount) {
+                    penalty += 50000; // Meget stor straf for at placere alle på samme udfald
+                }
+            }
         }
 
         // Specialregler for bonus bets (freebets)
@@ -679,19 +1245,89 @@ function showLoading(show: boolean) {
     }
 }
 
+// Update summary cards with calculation results
+function updateSummaryCards(result: ArbitrageResult, team1Name: string, team2Name: string): void {
+    // Update profit card
+    const profitCard = document.getElementById('profitCard');
+    const profitValue = document.getElementById('profitValue');
+    const profitPercentage = document.getElementById('profitPercentage');
+    const profitIcon = document.getElementById('profitIcon');
+    
+    if (profitCard && profitValue && profitPercentage && profitIcon) {
+        const profitClass = result.isArbitrage ? 'text-green-600' : 'text-red-600';
+        const iconClass = result.isArbitrage ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600';
+        
+        profitValue.textContent = `${result.profit.toLocaleString('da-DK')} DKK`;
+        profitValue.className = `text-2xl font-bold ${profitClass}`;
+        profitPercentage.textContent = `${result.profitPercentage.toFixed(2)}% ROI`;
+        profitPercentage.className = `text-sm ${profitClass}`;
+        profitIcon.className = `w-8 h-8 rounded-full flex items-center justify-center ${iconClass}`;
+    }
+
+    // Update stake card
+    const stakeValue = document.getElementById('stakeValue');
+    const actualCost = document.getElementById('actualCost');
+    
+    if (stakeValue && actualCost) {
+        stakeValue.textContent = `${result.totalStake.toLocaleString('da-DK')} DKK`;
+        actualCost.textContent = `${result.totalActualCost.toLocaleString('da-DK')} DKK faktisk`;
+    }
+
+    // Update status card
+    const statusCard = document.getElementById('statusCard');
+    const statusValue = document.getElementById('statusValue');
+    const statusSubtext = document.getElementById('statusSubtext');
+    const statusIcon = document.getElementById('statusIcon');
+    
+    if (statusCard && statusValue && statusSubtext && statusIcon) {
+        const statusClass = result.isArbitrage ? 'text-green-600' : 'text-red-600';
+        const iconClass = result.isArbitrage ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600';
+        
+        statusValue.textContent = result.isArbitrage ? 'Arbitrage fundet!' : 'Ingen arbitrage';
+        statusValue.className = `text-lg font-bold ${statusClass}`;
+        statusSubtext.textContent = result.isArbitrage ? 'Garanteret profit' : 'Prøv andre odds';
+        statusIcon.className = `w-8 h-8 rounded-full flex items-center justify-center ${iconClass}`;
+    }
+
+    // Update potential returns
+    const team1Return = document.getElementById('team1Return');
+    const team1Label = document.getElementById('team1Label');
+    const drawReturn = document.getElementById('drawReturn');
+    const team2Return = document.getElementById('team2Return');
+    const team2Label = document.getElementById('team2Label');
+    
+    if (team1Return && team1Label) {
+        team1Return.textContent = `${result.potentialReturns.team1.toLocaleString('da-DK')} DKK`;
+        team1Label.textContent = team1Name;
+    }
+    
+    if (drawReturn) {
+        drawReturn.textContent = `${result.potentialReturns.draw.toLocaleString('da-DK')} DKK`;
+    }
+    
+    if (team2Return && team2Label) {
+        team2Return.textContent = `${result.potentialReturns.team2.toLocaleString('da-DK')} DKK`;
+        team2Label.textContent = team2Name;
+    }
+}
+
 // Opdater updateUI funktionen til at håndtere empty state
 function updateUI(result: ArbitrageResult): void {
     if (!result) return;
     lastCalculatedResult = result;
 
+    // Gem beregning til historik
     const customer = getCurrentCustomer();
+    if (customer && customer.teamNames) {
+        saveCalculationToHistory(result, customer.teamNames, currentBetType);
+    }
+
     const team1Name = customer.teamNames?.team1 || 'Hold 1';
     const team2Name = customer.teamNames?.team2 || 'Hold 2';
 
     const resultsElement = document.getElementById('results');
     const emptyState = document.getElementById('emptyState');
     const resultsBody = document.getElementById('resultsBody') as HTMLElement;
-    const profitInfo = document.getElementById('profitInfo') as HTMLElement;
     
     if (resultsElement && emptyState) {
         resultsElement.classList.remove('hidden');
@@ -795,51 +1431,8 @@ function updateUI(result: ArbitrageResult): void {
     
     resultsBody.innerHTML = tableHTML;
 
-    const profitClass = result.isArbitrage ? 'text-green-600' : 'text-red-600';
-    profitInfo.innerHTML = `
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-                <div class="${profitClass} font-semibold text-lg mb-2">
-                    ${result.isArbitrage ? '✓ Arbitrage mulighed!' : '✗ Ingen arbitrage'}
-                </div>
-                <div class="space-y-2">
-                    <div class="flex justify-between text-sm">
-                        <span class="text-gray-600">Total indsats:</span>
-                        <span class="font-medium">${result.totalStake.toLocaleString('da-DK')} DKK</span>
-                    </div>
-                    <div class="flex justify-between text-sm">
-                        <span class="text-gray-600">Faktisk omkostning:</span>
-                        <span class="font-medium">${result.totalActualCost.toLocaleString('da-DK')} DKK</span>
-                    </div>
-                </div>
-            </div>
-            <div>
-                <div class="font-semibold text-gray-800 mb-2">Potentielle gevinster:</div>
-                <div class="space-y-2">
-                    <div class="flex justify-between text-sm">
-                        <span class="text-gray-600">${team1Name}:</span>
-                        <span class="font-medium">${result.potentialReturns.team1.toLocaleString('da-DK')} DKK</span>
-                    </div>
-                    <div class="flex justify-between text-sm">
-                        <span class="text-gray-600">Uafgjort:</span>
-                        <span class="font-medium">${result.potentialReturns.draw.toLocaleString('da-DK')} DKK</span>
-                    </div>
-                    <div class="flex justify-between text-sm">
-                        <span class="text-gray-600">${team2Name}:</span>
-                        <span class="font-medium">${result.potentialReturns.team2.toLocaleString('da-DK')} DKK</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="mt-4 pt-4 border-t border-gray-200">
-            <div class="flex justify-between items-center">
-                <span class="text-gray-700 font-medium">Garanteret profit:</span>
-                <span class="${profitClass} text-lg font-bold">
-                    ${result.profit.toLocaleString('da-DK')} DKK (${result.profitPercentage.toFixed(2)}%)
-                </span>
-            </div>
-        </div>
-    `;
+    // Update summary cards
+    updateSummaryCards(result, team1Name, team2Name);
 }
 
 function createBookmakerInputs(): void {
@@ -851,288 +1444,15 @@ function createBookmakerInputs(): void {
     const customer = getCurrentCustomer();
     if (!customer) return;  // Sikr at vi har en kunde
 
-    const isBet2 = customer.betType === 'bonus';
     const bookmakers = customer.bookmakers;
 
+
+    // Create bookmaker cards (always use compact view)
     bookmakers.forEach(bookmaker => {
-        const bookmakerId = generateBookmakerId(bookmaker.name);
-        const div = document.createElement('div');
-        div.className = 'bookmaker-card';
-        div.setAttribute('data-bookmaker', bookmakerId);
-
-        // Brug type guard til at bestemme odds
-        const odds = bookmaker.odds || { team1: 0, draw: 0, team2: 0 };
-
-        div.innerHTML = `
-            <div class="bookmaker-header">
-                <div>
-                    <div class="flex items-center gap-2">
-                        <h3 class="bookmaker-title">${bookmaker.name}</h3>
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" id="${bookmakerId}-active" class="sr-only peer" ${bookmaker.isActive ? 'checked' : ''}>
-                            <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
-                        </label>
-                    </div>
-                    <span class="bookmaker-info">Min. odds: ${bookmaker.minOdds} | Indsats: ${bookmaker.fixedStake} DKK</span>
-                    ${bookmaker.bonusType !== 'none' ? 
-                        `<div class="bookmaker-bonus mt-1">
-                            <div class="flex items-center gap-2">
-                                <span class="inline-flex items-center px-2 py-1 rounded-md text-sm ${
-                                    bookmaker.bonusType === 'freebet' ? 'bg-green-100 text-green-800' : 
-                                    'bg-blue-100 text-blue-800'
-                                }">
-                                    ${bookmaker.bonusType === 'freebet' ? 'Freebet' : 'Matching Bonus'}: 
-                                    ${bookmaker.bonusAmount} DKK
-                                    ${bookmaker.isBonusLocked ? '🔒' : '✓'}
-                                    ${bookmaker.bonusOnlyIfLost ? ' (kun hvis tabt)' : ''}
-                                </span>
-                                ${isBet2 ? `
-                                    <label class="flex items-center gap-1">
-                                        <input type="checkbox" 
-                                               id="${bookmakerId}-used-in-bet1"
-                                               class="form-checkbox h-4 w-4 text-blue-600"
-                                               ${bookmaker.usedInBet1 ? 'checked' : ''}>
-                                        <span class="text-sm text-gray-600">Brugt i Bet 1</span>
-                                    </label>
-                                ` : ''}
-                            </div>
-                            <span class="text-xs text-gray-600 block">
-                                Kræver ${bookmaker.qualifyingBetAmount} DKK kvalificerende bet med min. odds ${bookmaker.bonusMinOdds}
-                                ${bookmaker.bonusOnlyIfLost ? ' - Bonus kun hvis kvalificerende bet tabes (spil på underdog)' : ''}
-                            </span>
-                            ${isBet2 ? `
-                                <div class="mt-2">
-                                    ${bookmaker.bonusType === 'matchingBonus' ? `
-                                        <div class="flex items-center gap-2">
-                                            <label class="text-sm text-gray-600">Saldo fra Bet 1:</label>
-                                            <input type="number" 
-                                                   id="${bookmakerId}-bet1-balance" 
-                                                   class="input-field w-32" 
-                                                   value="${bookmaker.bet1Balance || ''}"
-                                                   placeholder="DKK"
-                                                   ${!bookmaker.usedInBet1 ? 'disabled' : ''}>
-                                        </div>
-                                    ` : bookmaker.bonusType === 'freebet' ? `
-                                        <div class="space-y-2">
-                                            ${bookmaker.bonusOnlyIfLost ? `
-                                                 <div class="space-y-2">
-                                                     <div class="flex items-center gap-2">
-                                                         <label class="text-sm text-gray-600">Bet 1 resultat:</label>
-                                                         <div class="flex items-center gap-2">
-                                                             <label class="flex items-center gap-1">
-                                                                 <input type="radio" 
-                                                                        name="${bookmakerId}-bet1-result"
-                                                                        value="lost"
-                                                                        class="form-radio h-4 w-4 text-red-600"
-                                                                        ${bookmaker.bet1Lost === true ? 'checked' : ''}>
-                                                                 <span class="text-sm text-red-600">Tabt</span>
-                                                             </label>
-                                                             <label class="flex items-center gap-1">
-                                                                 <input type="radio" 
-                                                                        name="${bookmakerId}-bet1-result"
-                                                                        value="won"
-                                                                        class="form-radio h-4 w-4 text-green-600"
-                                                                        ${bookmaker.bet1Lost === false ? 'checked' : ''}>
-                                                                 <span class="text-sm text-green-600">Vundet</span>
-                                                             </label>
-                                                         </div>
-                                                     </div>
-                                                     <div class="text-xs text-gray-600 bg-blue-50 p-2 rounded border-l-4 border-blue-400">
-                                                         <strong>💡 Freebet betingelse:</strong> 
-                                                         <span class="freebet-status">
-                                                             ${bookmaker.bet1Lost === true ? 
-                                                                 '<span class="text-green-600 font-medium">✓ Freebet er tilgængelig (Bet 1 blev tabt)</span>' : 
-                                                                 bookmaker.bet1Lost === false ? 
-                                                                     '<span class="text-red-600 font-medium">✗ Freebet ikke tilgængelig (Bet 1 blev vundet)</span>' :
-                                                                     '<span class="text-gray-500">Vælg Bet 1 resultat for at se om freebet er tilgængelig</span>'
-                                                             }
-                                                         </span>
-                                                     </div>
-                                                 </div>
-                                            ` : ''}
-                                            <div class="flex items-center gap-2">
-                                                <label class="text-sm text-gray-600">Gevinst fra Bet 1:</label>
-                                                <input type="number" 
-                                                       id="${bookmakerId}-bet1-profit" 
-                                                       class="input-field w-32" 
-                                                       value="${bookmaker.bet1Profit || ''}"
-                                                       placeholder="DKK">
-                                                <div class="text-xs text-gray-500 ml-2">
-                                                    ${bookmaker.usedInBet1 ? `(Freebet: ${bookmaker.bonusAmount} DKK)` : '(Ikke brugt i Bet 1)'}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ` : ''}
-                                </div>
-                            ` : ''}
-                        </div>` 
-                        : ''}
-                </div>
-            </div>
-            <div class="odds-grid">
-                <div>
-                    <label class="odds-label">Hold 1</label>
-                    <input type="number" step="0.01" min="${bookmaker.minOdds}" 
-                           class="input-field" 
-                           id="${bookmakerId}-team1" 
-                           value="${odds.team1 || ''}"
-                           placeholder="Odds">
-                    <div class="text-xs text-red-600 hidden mt-1" id="${bookmakerId}-team1-error">
-                        Min. ${bookmaker.minOdds}
-                    </div>
-                </div>
-                <div>
-                    <label class="odds-label">Uafgjort</label>
-                    <input type="number" step="0.01" min="${bookmaker.minOdds}" 
-                           class="input-field" 
-                           id="${bookmakerId}-draw" 
-                           value="${odds.draw || ''}"
-                           placeholder="Odds">
-                    <div class="text-xs text-red-600 hidden mt-1" id="${bookmakerId}-draw-error">
-                        Min. ${bookmaker.minOdds}
-                    </div>
-                </div>
-                <div>
-                    <label class="odds-label">Hold 2</label>
-                    <input type="number" step="0.01" min="${bookmaker.minOdds}" 
-                           class="input-field" 
-                           id="${bookmakerId}-team2" 
-                           value="${odds.team2 || ''}"
-                           placeholder="Odds">
-                    <div class="text-xs text-red-600 hidden mt-1" id="${bookmakerId}-team2-error">
-                        Min. ${bookmaker.minOdds}
-                    </div>
-                </div>
-            </div>
-        `;
-        container.appendChild(div);
-
-        // Tilføj event listeners for Bet 1 checkboxes og inputs
-        if (isBet2) {
-            const usedInBet1Checkbox = document.getElementById(`${bookmakerId}-used-in-bet1`) as HTMLInputElement;
-            if (usedInBet1Checkbox) {
-                usedInBet1Checkbox.addEventListener('change', () => {
-                    bookmaker.usedInBet1 = usedInBet1Checkbox.checked;
-                    
-                    // Opdater input felter baseret på checkbox status
-                    if (bookmaker.bonusType === 'matchingBonus') {
-                        const balanceInput = document.getElementById(`${bookmakerId}-bet1-balance`) as HTMLInputElement;
-                        if (balanceInput) {
-                            balanceInput.disabled = !usedInBet1Checkbox.checked;
-                            if (!usedInBet1Checkbox.checked) {
-                                balanceInput.value = '';
-                                bookmaker.bet1Balance = 0;
-                            }
-                        }
-                    }
-                });
-            }
-
-            if (bookmaker.bonusType === 'matchingBonus') {
-                const balanceInput = document.getElementById(`${bookmakerId}-bet1-balance`) as HTMLInputElement;
-                if (balanceInput) {
-                    balanceInput.addEventListener('change', () => {
-                        const value = parseFloat(balanceInput.value) || 0;
-                        bookmaker.bet1Balance = value;
-                    });
-                }
-            } else if (bookmaker.bonusType === 'freebet') {
-                const profitInput = document.getElementById(`${bookmakerId}-bet1-profit`) as HTMLInputElement;
-                if (profitInput) {
-                    profitInput.addEventListener('change', () => {
-                        const value = parseFloat(profitInput.value) || 0;
-                        bookmaker.bet1Profit = value;
-                    });
-                }
-
-                // Tilføj event listeners for Bet 1 resultat radio buttons
-                if (bookmaker.bonusOnlyIfLost) {
-                    const lostRadio = document.querySelector(`input[name="${bookmakerId}-bet1-result"][value="lost"]`) as HTMLInputElement;
-                    const wonRadio = document.querySelector(`input[name="${bookmakerId}-bet1-result"][value="won"]`) as HTMLInputElement;
-                    
-                    const updateFreebetStatus = () => {
-                        // Find status besked elementet og opdater det
-                        const statusElement = document.querySelector(`[data-bookmaker="${bookmakerId}"] .freebet-status`);
-                        if (statusElement) {
-                            if (bookmaker.bet1Lost === true) {
-                                statusElement.innerHTML = '<span class="text-green-600 font-medium">✓ Freebet er tilgængelig (Bet 1 blev tabt)</span>';
-                            } else if (bookmaker.bet1Lost === false) {
-                                statusElement.innerHTML = '<span class="text-red-600 font-medium">✗ Freebet ikke tilgængelig (Bet 1 blev vundet)</span>';
-                            } else {
-                                statusElement.innerHTML = '<span class="text-gray-500">Vælg Bet 1 resultat for at se om freebet er tilgængelig</span>';
-                            }
-                        }
-                    };
-                    
-                    if (lostRadio) {
-                        lostRadio.addEventListener('change', () => {
-                            bookmaker.bet1Lost = true;
-                            updateFreebetStatus();
-                        });
-                    }
-                    
-                    if (wonRadio) {
-                        wonRadio.addEventListener('change', () => {
-                            bookmaker.bet1Lost = false;
-                            updateFreebetStatus();
-                        });
-                    }
-                }
-            }
-        }
-
-        // Tilføj event listeners til odds inputs med synkronisering
-        ['team1', 'draw', 'team2'].forEach(type => {
-            const input = document.getElementById(`${bookmakerId}-${type}`) as HTMLInputElement;
-            const error = document.getElementById(`${bookmakerId}-${type}-error`);
-            
-            if (input && error) {
-                // Validering på input event
-                input.addEventListener('input', () => {
-                    const value = parseFloat(input.value) || 0;
-                    
-                    // Validering
-                    if (value > 0 && value < bookmaker.minOdds) {
-                        error.classList.remove('hidden');
-                        input.classList.add('border-yellow-500');
-                    } else {
-                        error.classList.add('hidden');
-                        input.classList.remove('border-yellow-500');
-                    }
-                });
-
-                // Synkronisering på blur event
-                input.addEventListener('blur', () => {
-                    const value = parseFloat(input.value) || 0;
-                    if (!bookmaker.odds) {
-                        bookmaker.odds = { team1: 0, draw: 0, team2: 0 };
-                    }
-                    bookmaker.odds[type as keyof typeof odds] = value;
-                });
-            }
-        });
-
-        // Tilføj toggle funktionalitet
-        const toggle = document.getElementById(`${bookmakerId}-active`) as HTMLInputElement;
-        if (toggle) {
-            toggle.addEventListener('change', () => {
-                const card = toggle.closest('.bookmaker-card');
-                if (card) {
-                    if (toggle.checked) {
-                        card.classList.remove('opacity-50');
-                    } else {
-                        card.classList.add('opacity-50');
-                    }
-                }
-                bookmaker.isActive = toggle.checked;
-            });
-
-            // Sæt initial opacity baseret på isActive
-            const card = toggle.closest('.bookmaker-card');
-            if (card && !bookmaker.isActive) {
-                card.classList.add('opacity-50');
-            }
-        }
+        // Use compact card component
+        const cardComponent = new BookmakerCard(bookmaker, customer.id);
+        const cardElement = cardComponent.create();
+        container.appendChild(cardElement);
     });
 }
 
@@ -1142,9 +1462,12 @@ function gatherOddsData(): BookmakerOdds[] {
 
     return customer.bookmakers.map(bookmaker => {
         const bookmakerId = generateBookmakerId(bookmaker.name);
-        const team1Input = document.getElementById(`${bookmakerId}-team1`) as HTMLInputElement;
-        const drawInput = document.getElementById(`${bookmakerId}-draw`) as HTMLInputElement;
-        const team2Input = document.getElementById(`${bookmakerId}-team2`) as HTMLInputElement;
+        const team1Input = document.getElementById(`${bookmakerId}-team1`) as HTMLInputElement || 
+                          document.getElementById(`${bookmakerId}-team1-inline`) as HTMLInputElement;
+        const drawInput = document.getElementById(`${bookmakerId}-draw`) as HTMLInputElement || 
+                         document.getElementById(`${bookmakerId}-draw-inline`) as HTMLInputElement;
+        const team2Input = document.getElementById(`${bookmakerId}-team2`) as HTMLInputElement || 
+                          document.getElementById(`${bookmakerId}-team2-inline`) as HTMLInputElement;
         const activeToggle = document.getElementById(`${bookmakerId}-active`) as HTMLInputElement;
 
         const team1Value = parseFloat(team1Input.value) || 0;
@@ -1229,9 +1552,10 @@ function gatherOddsData(): BookmakerOdds[] {
     });
 }
 
+// Download CSV template
 function downloadTemplate() {
-    // Brug standard bookmakere hvis der ikke er nogen aktiv kunde
-    const bookmakers = customers.length === 0 ? BOOKMAKERS : getCurrentCustomer().bookmakers;
+    const customer = getCurrentCustomer();
+    const bookmakers = customer.bookmakers;
     const headers = ['Bookmaker', 'Hold 1', 'Uafgjort', 'Hold 2'];
     
     const rows = bookmakers.map(bookmaker => [bookmaker.name, '', '', '']);
@@ -1256,9 +1580,75 @@ function downloadTemplate() {
     window.URL.revokeObjectURL(url);
 }
 
+// Export results to CSV
+function exportResultsToCSV(result: ArbitrageResult): void {
+    let csvContent = 'Bookmaker,Odds Hold 1,Odds Uafgjort,Odds Hold 2,Indsats,Gevinst\n';
+    
+    result.allBookmakers.forEach(bm => {
+        const team1Odds = bm.team1Odds || 0;
+        const drawOdds = bm.drawOdds || 0;
+        const team2Odds = bm.team2Odds || 0;
+        const stake = bm.fixedStake || 0;
+        const profit = bm.potentialReturn || 0;
+        
+        csvContent += `${bm.name},${team1Odds},${drawOdds},${team2Odds},${stake},${profit}\n`;
+    });
+    
+    // Add summary
+    csvContent += `\nSummary\n`;
+    csvContent += `Total Indsats,${result.totalStake}\n`;
+    csvContent += `Faktisk Omkostning,${result.totalActualCost}\n`;
+    csvContent += `Profit,${result.profit}\n`;
+    csvContent += `ROI,${result.profitPercentage.toFixed(2)}%\n`;
+    csvContent += `Arbitrage,${result.isArbitrage ? 'Ja' : 'Nej'}\n`;
+    
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `arbitrage-resultat-${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
 // Event handler
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize user system and load from localStorage
+    loadFromLocalStorage();
+    
+    // Create default customer if none exists
+    if (customers.length === 0) {
+        const defaultCustomer: Customer = {
+            id: 'default-customer',
+            name: 'Standard Kunde',
+            bookmakers: BOOKMAKERS.map(bm => ({...bm})),
+            teamNames: {
+                team1: 'Hold 1',
+                team2: 'Hold 2'
+            },
+            betType: 'qualifying'
+        };
+        customers.push(defaultCustomer);
+        currentCustomerId = defaultCustomer.id;
+        saveToLocalStorage();
+    }
+    
+    // Set initial theme
+    document.documentElement.setAttribute('data-theme', isDarkMode ? 'dark' : 'light');
+    
+    // Initialize UI components
+    initializeThemeToggle();
+    initializeHistoryPanel();
+    
     createCustomerSelector(); // Vis tomme inputs først
+    
+    // Create bookmaker inputs if customer has team names
+    const customer = getCurrentCustomer();
+    if (customer && customer.teamNames && customer.teamNames.team1 && customer.teamNames.team2) {
+        createBookmakerInputs();
+    }
     
     const calculateButton = document.getElementById('calculateButton');
     calculateButton?.addEventListener('click', async () => {
@@ -1279,12 +1669,36 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    const exportButton = document.getElementById('exportResults');
+    exportButton?.addEventListener('click', () => {
+        if (lastCalculatedResult) {
+            exportResultsToCSV(lastCalculatedResult);
+        }
+    });
+
     const downloadButton = document.getElementById('downloadTemplate');
-    if (downloadButton) {
-        downloadButton.addEventListener('click', () => {
-            downloadTemplate();
-        });
-    }
+    downloadButton?.addEventListener('click', () => {
+        downloadTemplate();
+    });
+
+    // Upload button event listener
+    const uploadButton = document.getElementById('uploadButton');
+    const fileInput = document.getElementById('oddsFile') as HTMLInputElement;
+    
+    uploadButton?.addEventListener('click', () => {
+        fileInput?.click();
+    });
+    
+    fileInput?.addEventListener('change', (event) => {
+        if (window.handleFileUpload) {
+            window.handleFileUpload(event);
+        } else {
+            // Fallback: import and use the function
+            import('./fileHandlers').then(module => {
+                module.handleFileUpload(event);
+            });
+        }
+    });
 
     // Importer og tilføj handleFileUpload til window objektet
     import('./fileHandlers').then(module => {

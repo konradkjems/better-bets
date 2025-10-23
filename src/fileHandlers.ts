@@ -19,6 +19,58 @@ export function parseDecimalValue(value: string): number {
     return parseFloat(cleaned);
 }
 
+function syncInputFields(bookmakerId: string, team1Input: HTMLInputElement, drawInput: HTMLInputElement, team2Input: HTMLInputElement): void {
+    // Find både expanded og collapsed input felter
+    const team1Expanded = document.getElementById(`${bookmakerId}-team1`) as HTMLInputElement;
+    const team1Collapsed = document.getElementById(`${bookmakerId}-team1-inline`) as HTMLInputElement;
+    const drawExpanded = document.getElementById(`${bookmakerId}-draw`) as HTMLInputElement;
+    const drawCollapsed = document.getElementById(`${bookmakerId}-draw-inline`) as HTMLInputElement;
+    const team2Expanded = document.getElementById(`${bookmakerId}-team2`) as HTMLInputElement;
+    const team2Collapsed = document.getElementById(`${bookmakerId}-team2-inline`) as HTMLInputElement;
+    
+    // Synkroniser team1
+    if (team1Expanded && team1Collapsed) {
+        team1Expanded.value = team1Input.value;
+        team1Collapsed.value = team1Input.value;
+    }
+    
+    // Synkroniser draw
+    if (drawExpanded && drawCollapsed) {
+        drawExpanded.value = drawInput.value;
+        drawCollapsed.value = drawInput.value;
+    }
+    
+    // Synkroniser team2
+    if (team2Expanded && team2Collapsed) {
+        team2Expanded.value = team2Input.value;
+        team2Collapsed.value = team2Input.value;
+    }
+}
+
+function syncAllBookmakerCards(): void {
+    // Find all BookmakerCard instances and sync their input fields
+    const bookmakerCards = document.querySelectorAll('[data-bookmaker]');
+    bookmakerCards.forEach(card => {
+        const bookmakerAttr = card.getAttribute('data-bookmaker');
+        if (bookmakerAttr) {
+            // Convert back to bookmaker name
+            const bookmakerName = bookmakerAttr.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+            const bookmakerId = generateBookmakerId(bookmakerName);
+            
+            ['team1', 'draw', 'team2'].forEach(field => {
+                const expandedInput = document.getElementById(`${bookmakerId}-${field}`) as HTMLInputElement;
+                const inlineInput = document.getElementById(`${bookmakerId}-${field}-inline`) as HTMLInputElement;
+                
+                if (expandedInput && inlineInput) {
+                    // Sync both ways
+                    expandedInput.value = inlineInput.value;
+                    inlineInput.value = expandedInput.value;
+                }
+            });
+        }
+    });
+}
+
 export function handleFileUpload(event: Event) {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
@@ -111,9 +163,12 @@ export function handleFileUpload(event: Event) {
             }
             
             const bookmakerId = generateBookmakerId(matchingBookmaker.name);
-            const team1Input = document.getElementById(`${bookmakerId}-team1`) as HTMLInputElement;
-            const drawInput = document.getElementById(`${bookmakerId}-draw`) as HTMLInputElement;
-            const team2Input = document.getElementById(`${bookmakerId}-team2`) as HTMLInputElement;
+            const team1Input = document.getElementById(`${bookmakerId}-team1`) as HTMLInputElement || 
+                              document.getElementById(`${bookmakerId}-team1-inline`) as HTMLInputElement;
+            const drawInput = document.getElementById(`${bookmakerId}-draw`) as HTMLInputElement || 
+                             document.getElementById(`${bookmakerId}-draw-inline`) as HTMLInputElement;
+            const team2Input = document.getElementById(`${bookmakerId}-team2`) as HTMLInputElement || 
+                              document.getElementById(`${bookmakerId}-team2-inline`) as HTMLInputElement;
             
             if (!team1Input || !drawInput || !team2Input) {
                 console.warn(`Kunne ikke finde input felter for ${matchingBookmaker.name}`);
@@ -156,6 +211,9 @@ export function handleFileUpload(event: Event) {
 
             if (updatedFields > 0) {
                 updatedCount++;
+                
+                // Synkroniser mellem expanded og collapsed input felter
+                syncInputFields(bookmakerId, team1Input, drawInput, team2Input);
             }
         }
 
@@ -168,6 +226,9 @@ export function handleFileUpload(event: Event) {
                 message += `\n\n${errorCount} rækker kunne ikke behandles (ukendte bookmakere eller manglende data).`;
             }
             alert(message);
+            
+            // Sync all BookmakerCard instances
+            syncAllBookmakerCards();
             
             // Trigger beregning automatisk efter upload
             const calculateButton = document.getElementById('calculateButton');

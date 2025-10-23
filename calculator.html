@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Better Bets Lommeregner</title>
-    <link rel="stylesheet" href="/src/style.css">
+    <link rel="stylesheet" href="/src/main.css">
     <link rel="icon" type="image/svg+xml" href="/src/assets/Better Bets Icon.svg">
     <script type="module" src="/src/main.ts"></script>
     <script type="module" src="/src/fileHandlers.ts"></script>
@@ -19,6 +19,14 @@
                     <span class="text-xl font-bold text-gray-800">Better Bets</span>
                 </a>
                 <div class="flex items-center gap-4">
+                    <!-- Theme Toggle -->
+                    <button id="themeToggle" class="theme-toggle btn-glass flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                        </svg>
+                        <span class="theme-text">Dark Mode</span>
+                    </button>
+                    
                     <span id="userEmail" class="text-gray-600"></span>
                     <button id="logoutButton" class="btn-secondary">Log ud</button>
                 </div>
@@ -57,9 +65,8 @@
                                 <input type="file" 
                                        id="oddsFile" 
                                        accept=".csv"
-                                       class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                                       onchange="window.handleFileUpload(event)">
-                                <button class="btn-secondary flex items-center gap-2">
+                                       class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                                <button id="uploadButton" class="btn-secondary flex items-center gap-2">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
                                     </svg>
@@ -90,28 +97,121 @@
 
             <!-- Højre side - Resultater -->
             <div class="lg:w-1/2">
-                <div id="results" class="bg-white rounded-xl shadow-sm p-6 hidden">
-                    <div class="flex items-center justify-between mb-6">
-                        <div>
-                            <h2 class="text-xl font-bold text-gray-800">Arbitrage Muligheder</h2>
-                            <p class="text-sm text-gray-600 mt-1">Beregnede indsatser og potentielle gevinster</p>
+                <div id="results" class="hidden">
+                    <!-- Summary Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <!-- Profit Card -->
+                        <div id="profitCard" class="summary-card">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center gap-2">
+                                    <div id="profitIcon" class="w-8 h-8 rounded-full flex items-center justify-center">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/>
+                                        </svg>
+                                    </div>
+                                    <span class="text-sm font-medium text-gray-600">Profit</span>
+                                </div>
+                            </div>
+                            <div id="profitValue" class="text-2xl font-bold">0 DKK</div>
+                            <div id="profitPercentage" class="text-sm text-gray-500">0% ROI</div>
+                        </div>
+
+                        <!-- Total Stake Card -->
+                        <div id="stakeCard" class="summary-card">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/>
+                                        </svg>
+                                    </div>
+                                    <span class="text-sm font-medium text-gray-600">Total Indsats</span>
+                                </div>
+                            </div>
+                            <div id="stakeValue" class="text-2xl font-bold">0 DKK</div>
+                            <div id="actualCost" class="text-sm text-gray-500">0 DKK faktisk</div>
+                        </div>
+
+                        <!-- Arbitrage Status Card -->
+                        <div id="statusCard" class="summary-card">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center gap-2">
+                                    <div id="statusIcon" class="w-8 h-8 rounded-full flex items-center justify-center">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        </svg>
+                                    </div>
+                                    <span class="text-sm font-medium text-gray-600">Status</span>
+                                </div>
+                            </div>
+                            <div id="statusValue" class="text-lg font-bold">Ingen arbitrage</div>
+                            <div id="statusSubtext" class="text-sm text-gray-500">Beregn for at se</div>
                         </div>
                     </div>
-                    <div id="profitInfo" class="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-100"></div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full border-collapse">
-                            <thead>
-                                <tr class="border-b border-gray-100">
-                                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Bookmaker</th>
-                                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Hold 1</th>
-                                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Uafgjort</th>
-                                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Hold 2</th>
-                                    <th class="px-4 py-3 text-right text-sm font-semibold text-gray-700">Indsats</th>
-                                </tr>
-                            </thead>
-                            <tbody id="resultsBody" class="divide-y divide-gray-100">
-                            </tbody>
-                        </table>
+
+                    <!-- Potential Returns Card -->
+                    <div class="summary-card mb-6">
+                        <div class="flex items-center gap-2 mb-4">
+                            <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+                                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                                </svg>
+                            </div>
+                            <h3 class="text-lg font-semibold text-gray-800">Potentielle Gevinster</h3>
+                        </div>
+                        <div class="grid grid-cols-3 gap-4">
+                            <div class="text-center p-3 bg-gray-50 rounded-lg">
+                                <div id="team1Return" class="text-lg font-bold text-gray-800">0 DKK</div>
+                                <div id="team1Label" class="text-sm text-gray-600">Hold 1</div>
+                            </div>
+                            <div class="text-center p-3 bg-gray-50 rounded-lg">
+                                <div id="drawReturn" class="text-lg font-bold text-gray-800">0 DKK</div>
+                                <div class="text-sm text-gray-600">Uafgjort</div>
+                            </div>
+                            <div class="text-center p-3 bg-gray-50 rounded-lg">
+                                <div id="team2Return" class="text-lg font-bold text-gray-800">0 DKK</div>
+                                <div id="team2Label" class="text-sm text-gray-600">Hold 2</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Detailed Results Table -->
+                    <div class="summary-card">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center gap-2">
+                                <div class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                                    </svg>
+                                </div>
+                                <h3 class="text-lg font-semibold text-gray-800">Detaljerede Indsatser</h3>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button id="exportResults" class="btn-secondary text-sm">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                    </svg>
+                                    Eksporter
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="overflow-x-auto">
+                            <table class="w-full border-collapse">
+                                <thead>
+                                    <tr class="border-b border-gray-200">
+                                        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Bookmaker</th>
+                                        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Hold 1</th>
+                                        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Uafgjort</th>
+                                        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Hold 2</th>
+                                        <th class="px-4 py-3 text-right text-sm font-semibold text-gray-700">Indsats</th>
+                                        <th class="px-4 py-3 text-right text-sm font-semibold text-gray-700">Gevinst</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="resultsBody" class="divide-y divide-gray-100">
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
 
@@ -126,7 +226,78 @@
             </div>
         </div>
     </div>
+
+    <!-- History Trigger Button -->
+    <button class="history-trigger fab">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <span class="badge absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">0</span>
+    </button>
+
+    <!-- History Panel -->
+    <aside id="historyPanel" class="history-panel closed">
+        <div class="p-6 h-full flex flex-col">
+            <!-- Header -->
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-lg font-semibold">Calculation History</h3>
+                <button id="closeHistory" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Filters -->
+            <div class="filters mb-6 space-y-3">
+                <select id="timeFilter" class="input-field">
+                    <option value="all">All Time</option>
+                    <option value="today">Today</option>
+                    <option value="week">This Week</option>
+                    <option value="month">This Month</option>
+                </select>
+                
+                <select id="typeFilter" class="input-field">
+                    <option value="all">All Types</option>
+                    <option value="qualifying">Qualifying</option>
+                    <option value="bonus">Bonus</option>
+                </select>
+                
+                <input type="search" id="searchHistory" class="input-field" placeholder="Search by team...">
+            </div>
+            
+            <!-- History List -->
+            <div id="historyList" class="flex-1 overflow-y-auto">
+                <div class="text-center text-gray-500 py-8">
+                    <svg class="w-12 h-12 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <p>No calculations yet</p>
+                    <p class="text-sm">Your calculation history will appear here</p>
+                </div>
+            </div>
+            
+            <!-- Stats Summary -->
+            <div class="history-stats mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+                <div class="grid grid-cols-3 gap-4 text-sm">
+                    <div class="text-center">
+                        <div class="font-semibold" id="totalCalculations">0</div>
+                        <div class="text-gray-500">Calculations</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="font-semibold text-green-600" id="totalProfit">+0 DKK</div>
+                        <div class="text-gray-500">Total Profit</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="font-semibold" id="avgROI">0%</div>
+                        <div class="text-gray-500">Avg ROI</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
     <script type="module" src="/src/main.ts"></script>
-    <script type="module" src="/src/auth.ts"></script>
+    <script type="module" src="/src/fileHandlers.ts"></script>
 </body>
 </html> 
