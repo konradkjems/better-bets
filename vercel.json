@@ -4,16 +4,16 @@
   "framework": "vite",
   "functions": {
     "api/test.ts": {
-      "runtime": "nodejs18.x"
+      "runtime": "nodejs20.x"
     },
     "api/calculations/list.ts": {
-      "runtime": "nodejs18.x"
+      "runtime": "nodejs20.x"
     },
     "api/calculations/save.ts": {
-      "runtime": "nodejs18.x"
+      "runtime": "nodejs20.x"
     },
     "api/calculations/[id].ts": {
-      "runtime": "nodejs18.x"
+      "runtime": "nodejs20.x"
     }
   },
   "rewrites": [
