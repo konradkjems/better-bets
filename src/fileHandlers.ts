@@ -91,8 +91,8 @@ export function handleFileUpload(event: Event) {
             const row = lines[i];
             if (!row.trim()) continue;
             
-            // Split på semikolon i stedet for komma
-            const cells = row.split(';').map(cell => cell.trim());
+            // Split på komma som separator
+            const cells = row.split(',').map(cell => cell.trim());
             const [bookmaker, ...oddsCells] = cells;
             
             if (!bookmaker) continue;

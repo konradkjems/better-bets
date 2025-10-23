@@ -1,0 +1,4 @@
+# Ignore API directory from Vite bundling
+api/
+api/*
+/api/*

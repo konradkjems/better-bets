@@ -1,28 +1,21 @@
 import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 import tailwindcss from 'tailwindcss';
 import autoprefixer from 'autoprefixer';
 
 export default defineConfig({
+    plugins: [react()],
     build: {
         rollupOptions: {
             input: {
                 main: 'index.html',
-                login: 'login.html',
-                register: 'register.html',
-                calculator: 'calculator.html',
-                about: 'about.html',
-                pricing: 'pricing.html',
-                contact: 'contact.html'
-            }
+                calculator: 'calculator.html'
+            },
+            external: ['/api/*']
         }
     },
     server: {
-        proxy: {
-            '/api': {
-                target: 'http://localhost:3001',
-                changeOrigin: true
-            }
-        }
+        port: 3000
     },
     css: {
         postcss: {
@@ -31,5 +24,15 @@ export default defineConfig({
                 autoprefixer
             ]
         }
-    }
-}); 
+    },
+    optimizeDeps: {
+        exclude: ['/api/*']
+    },
+    resolve: {
+        alias: {
+            '/api': false
+        }
+    },
+    publicDir: false,
+    assetsInclude: []
+});

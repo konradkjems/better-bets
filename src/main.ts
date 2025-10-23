@@ -457,6 +457,26 @@ function calculateArbitrage(oddsData: BookmakerOdds[]): ArbitrageResult {
 
         // Specialregler for kvalificerende bets
         if (isQualifyingBet) {
+            // Tæl "kun hvis tab"-freebets på hvert udfald
+            const bonusOnlyIfLostFreebets = [...team1, ...draw, ...team2].filter(bm => {
+                const bookmakerInfo = customer.bookmakers.find(b => b.name === bm.name);
+                return bookmakerInfo?.bonusOnlyIfLost && bookmakerInfo.bonusType === 'freebet';
+            });
+            
+            const team1BonusOnlyIfLost = bonusOnlyIfLostFreebets.filter(bm => bm.betType === 'team1').length;
+            const drawBonusOnlyIfLost = bonusOnlyIfLostFreebets.filter(bm => bm.betType === 'draw').length;
+            const team2BonusOnlyIfLost = bonusOnlyIfLostFreebets.filter(bm => bm.betType === 'team2').length;
+            
+            // Straf hvis "kun hvis tab"-freebets ikke er balanceret fordelt
+            const totalBonusOnlyIfLost = team1BonusOnlyIfLost + drawBonusOnlyIfLost + team2BonusOnlyIfLost;
+            if (totalBonusOnlyIfLost > 0) {
+                const idealPerOutcome = totalBonusOnlyIfLost / 3;
+                const deviation = Math.abs(team1BonusOnlyIfLost - idealPerOutcome) + 
+                                Math.abs(drawBonusOnlyIfLost - idealPerOutcome) + 
+                                Math.abs(team2BonusOnlyIfLost - idealPerOutcome);
+                penalty += deviation * 10000; // Stor straf for ubalanceret fordeling
+            }
+
             [...team1, ...draw, ...team2].forEach(bm => {
                 const bookmakerInfo = customer.bookmakers.find(b => b.name === bm.name);
                 
@@ -567,26 +587,54 @@ function calculateArbitrage(oddsData: BookmakerOdds[]): ArbitrageResult {
         }
 
         // Prioriter placering baseret på bookmaker præferencer
-        let priorities = [];
+        let priorities: Array<{ type: 'team1' | 'draw' | 'team2'; need: number; odds: number; current: BookmakerOdds[] }> = [];
         
-        if (current.preferLoss) {
-            // For bookmakere der foretrækker tab, placer dem hvor der er lavest return
-            priorities = [
-                { type: 'team1', need: -currentTeam1, odds: current.team1, current: team1 },
-                { type: 'draw', need: -currentDraw, odds: current.draw, current: draw },
-                { type: 'team2', need: -currentTeam2, odds: current.team2, current: team2 }
-            ]
-            .filter(p => p.odds > 0) // Fjern muligheder hvor odds er 0
-            .sort((a, b) => a.need - b.need);
-        } else {
-            // For normale bookmakere, placer dem hvor der er størst behov
-            priorities = [
-                { type: 'team1', need: targetReturnPerOutcome - currentTeam1, odds: current.team1, current: team1 },
-                { type: 'draw', need: targetReturnPerOutcome - currentDraw, odds: current.draw, current: draw },
-                { type: 'team2', need: targetReturnPerOutcome - currentTeam2, odds: current.team2, current: team2 }
-            ]
-            .filter(p => p.odds > 0) // Fjern muligheder hvor odds er 0
-            .sort((a, b) => b.need - a.need);
+        // Specialhåndtering for "kun hvis tab"-freebets i kvalificerende bets
+        if (isQualifyingBet) {
+            const bookmakerInfo = customer.bookmakers.find(b => b.name === current.name);
+            if (bookmakerInfo?.bonusOnlyIfLost && bookmakerInfo.bonusType === 'freebet') {
+                // Tæl hvor mange "kun hvis tab"-freebets der allerede er på hvert udfald
+                const existingBonusOnlyIfLost = [...team1, ...draw, ...team2].filter(bm => {
+                    const bmInfo = customer.bookmakers.find(b => b.name === bm.name);
+                    return bmInfo?.bonusOnlyIfLost && bmInfo.bonusType === 'freebet';
+                });
+                
+                const team1Count = existingBonusOnlyIfLost.filter(bm => bm.betType === 'team1').length;
+                const drawCount = existingBonusOnlyIfLost.filter(bm => bm.betType === 'draw').length;
+                const team2Count = existingBonusOnlyIfLost.filter(bm => bm.betType === 'team2').length;
+                
+                // Prioriter det udfald der har færrest "kun hvis tab"-freebets
+                priorities = [
+                    { type: 'team1' as const, need: -team1Count, odds: current.team1, current: team1 },
+                    { type: 'draw' as const, need: -drawCount, odds: current.draw, current: draw },
+                    { type: 'team2' as const, need: -team2Count, odds: current.team2, current: team2 }
+                ]
+                .filter(p => p.odds > 0) // Fjern muligheder hvor odds er 0
+                .sort((a, b) => a.need - b.need); // Laveste count først
+            }
+        }
+        
+        // Hvis der ikke er sat nogen prioriteter endnu, brug standard logik
+        if (priorities.length === 0) {
+            if (current.preferLoss) {
+                // For bookmakere der foretrækker tab, placer dem hvor der er lavest return
+                priorities = [
+                    { type: 'team1' as const, need: -currentTeam1, odds: current.team1, current: team1 },
+                    { type: 'draw' as const, need: -currentDraw, odds: current.draw, current: draw },
+                    { type: 'team2' as const, need: -currentTeam2, odds: current.team2, current: team2 }
+                ]
+                .filter(p => p.odds > 0) // Fjern muligheder hvor odds er 0
+                .sort((a, b) => a.need - b.need);
+            } else {
+                // For normale bookmakere, placer dem hvor der er størst behov
+                priorities = [
+                    { type: 'team1' as const, need: targetReturnPerOutcome - currentTeam1, odds: current.team1, current: team1 },
+                    { type: 'draw' as const, need: targetReturnPerOutcome - currentDraw, odds: current.draw, current: draw },
+                    { type: 'team2' as const, need: targetReturnPerOutcome - currentTeam2, odds: current.team2, current: team2 }
+                ]
+                .filter(p => p.odds > 0) // Fjern muligheder hvor odds er 0
+                .sort((a, b) => b.need - a.need);
+            }
         }
 
         // Hvis der ikke er nogen gyldige muligheder, spring denne bookmaker over
@@ -1237,8 +1285,8 @@ function downloadTemplate() {
     const rows = bookmakers.map(bookmaker => [bookmaker.name, '', '', '']);
     
     const csvContent = '\uFEFF' + [
-        headers.join(';'),
-        ...rows.map(row => row.join(';'))
+        headers.join(','),
+        ...rows.map(row => row.join(','))
     ].join('\r\n');
     
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });

@@ -1,10 +1,8 @@
-import { Analytics } from '@vercel/analytics/react';
+import React from 'react';
+import LandingPage from './LandingPage';
 
-export default function App() {
-  return (
-    <>
-      {/* Din eksisterende app indhold */}
-      <Analytics />
-    </>
-  );
-} 
+function App() {
+  return <LandingPage />;
+}
+
+export default App;
