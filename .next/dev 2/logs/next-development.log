@@ -1,0 +1,506 @@
+[00:00:01.105] Server  LOG      ✓ Ready in 897ms
+[00:00:06.073] Server  LOG      ○ Compiling /calculator ...
+[00:00:09.317] Server  ERROR    ⨯ ./src/app/globals.css
+Error evaluating Node.js code
+Error: Cannot find module './NameManager'
+Require stack:
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/sucrase/dist/index.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/lib/load-config.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/lib/setupTrackingContext.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/plugin.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/index.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/.next/dev/build/chunks/[root-of-the-server]__6d51cb5d._.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/.next/dev/build/chunks/[turbopack]_runtime.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/.next/dev/build/postcss.js
+    [at Function._resolveFilename (node:internal/modules/cjs/loader:1383:15)]
+    [at defaultResolveImpl (node:internal/modules/cjs/loader:1025:19)]
+    [at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1030:22)]
+    [at Function._load (node:internal/modules/cjs/loader:1192:37)]
+    [at TracingChannel.traceSync (node:diagnostics_channel:328:14)]
+    [at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)]
+    [at Module.require (node:internal/modules/cjs/loader:1463:12)]
+    [at require (node:internal/modules/helpers:147:16)]
+    [at Object.<anonymous> (/Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/sucrase/dist/index.js:5:20)]
+    [at Module._compile (node:internal/modules/cjs/loader:1706:14)]
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+
+[00:00:10.438] Browser ERROR   uncaughtError: Error: ./src/app/globals.css
+Error evaluating Node.js code
+Error: Cannot find module './NameManager'
+Require stack:
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/sucrase/dist/index.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/lib/load-config.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/lib/setupTrackingContext.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/plugin.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/index.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/.next/dev/build/chunks/[root-of-the-server]__6d51cb5d._.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/.next/dev/build/chunks/[turbopack]_runtime.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/.next/dev/build/postcss.js
+    [at Function._resolveFilename (node:internal/modules/cjs/loader:1383:15)]
+    [at defaultResolveImpl (node:internal/modules/cjs/loader:1025:19)]
+    [at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1030:22)]
+    [at Function._load (node:internal/modules/cjs/loader:1192:37)]
+    [at TracingChannel.traceSync (node:diagnostics_channel:328:14)]
+    [at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)]
+    [at Module.require (node:internal/modules/cjs/loader:1463:12)]
+    [at require (node:internal/modules/helpers:147:16)]
+    [at Object.<anonymous> (/Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/sucrase/dist/index.js:5:20)]
+    [at Module._compile (node:internal/modules/cjs/loader:1706:14)]
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+
+[00:00:10.621] Browser ERROR   ./src/app/globals.css
+Error evaluating Node.js code
+Error: Cannot find module './NameManager'
+Require stack:
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/sucrase/dist/index.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/lib/load-config.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/lib/setupTrackingContext.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/plugin.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/index.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/.next/dev/build/chunks/[root-of-the-server]__6d51cb5d._.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/.next/dev/build/chunks/[turbopack]_runtime.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/.next/dev/build/postcss.js
+    [at Function._resolveFilename (node:internal/modules/cjs/loader:1383:15)]
+    [at defaultResolveImpl (node:internal/modules/cjs/loader:1025:19)]
+    [at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1030:22)]
+    [at Function._load (node:internal/modules/cjs/loader:1192:37)]
+    [at TracingChannel.traceSync (node:diagnostics_channel:328:14)]
+    [at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)]
+    [at Module.require (node:internal/modules/cjs/loader:1463:12)]
+    [at require (node:internal/modules/helpers:147:16)]
+    [at Object.<anonymous> (/Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/sucrase/dist/index.js:5:20)]
+    [at Module._compile (node:internal/modules/cjs/loader:1706:14)]
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+[00:00:10.721] Browser ERROR   ./src/app/globals.css
+Error evaluating Node.js code
+Error: Cannot find module './NameManager'
+Require stack:
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/sucrase/dist/index.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/lib/load-config.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/lib/setupTrackingContext.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/plugin.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/index.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/.next/dev/build/chunks/[root-of-the-server]__6d51cb5d._.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/.next/dev/build/chunks/[turbopack]_runtime.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/.next/dev/build/postcss.js
+    [at Function._resolveFilename (node:internal/modules/cjs/loader:1383:15)]
+    [at defaultResolveImpl (node:internal/modules/cjs/loader:1025:19)]
+    [at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1030:22)]
+    [at Function._load (node:internal/modules/cjs/loader:1192:37)]
+    [at TracingChannel.traceSync (node:diagnostics_channel:328:14)]
+    [at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)]
+    [at Module.require (node:internal/modules/cjs/loader:1463:12)]
+    [at require (node:internal/modules/helpers:147:16)]
+    [at Object.<anonymous> (/Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/sucrase/dist/index.js:5:20)]
+    [at Module._compile (node:internal/modules/cjs/loader:1706:14)]
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+[00:00:33.024] Server  ERROR    ⨯ ./src/app/globals.css
+Error evaluating Node.js code
+Error: Cannot find module './NameManager'
+Require stack:
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/sucrase/dist/index.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/lib/load-config.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/lib/setupTrackingContext.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/plugin.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/index.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/.next/dev/build/chunks/[root-of-the-server]__6d51cb5d._.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/.next/dev/build/chunks/[turbopack]_runtime.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/.next/dev/build/postcss.js
+    [at Function._resolveFilename (node:internal/modules/cjs/loader:1383:15)]
+    [at defaultResolveImpl (node:internal/modules/cjs/loader:1025:19)]
+    [at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1030:22)]
+    [at Function._load (node:internal/modules/cjs/loader:1192:37)]
+    [at TracingChannel.traceSync (node:diagnostics_channel:328:14)]
+    [at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)]
+    [at Module.require (node:internal/modules/cjs/loader:1463:12)]
+    [at require (node:internal/modules/helpers:147:16)]
+    [at Object.<anonymous> (/Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/sucrase/dist/index.js:5:20)]
+    [at Module._compile (node:internal/modules/cjs/loader:1706:14)]
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+
+[00:00:33.263] Browser ERROR   uncaughtError: Error: ./src/app/globals.css
+Error evaluating Node.js code
+Error: Cannot find module './NameManager'
+Require stack:
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/sucrase/dist/index.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/lib/load-config.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/lib/setupTrackingContext.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/plugin.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/index.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/.next/dev/build/chunks/[root-of-the-server]__6d51cb5d._.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/.next/dev/build/chunks/[turbopack]_runtime.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/.next/dev/build/postcss.js
+    [at Function._resolveFilename (node:internal/modules/cjs/loader:1383:15)]
+    [at defaultResolveImpl (node:internal/modules/cjs/loader:1025:19)]
+    [at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1030:22)]
+    [at Function._load (node:internal/modules/cjs/loader:1192:37)]
+    [at TracingChannel.traceSync (node:diagnostics_channel:328:14)]
+    [at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)]
+    [at Module.require (node:internal/modules/cjs/loader:1463:12)]
+    [at require (node:internal/modules/helpers:147:16)]
+    [at Object.<anonymous> (/Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/sucrase/dist/index.js:5:20)]
+    [at Module._compile (node:internal/modules/cjs/loader:1706:14)]
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+
+[00:00:33.515] Browser ERROR   ./src/app/globals.css
+Error evaluating Node.js code
+Error: Cannot find module './NameManager'
+Require stack:
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/sucrase/dist/index.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/lib/load-config.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/lib/setupTrackingContext.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/plugin.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/index.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/.next/dev/build/chunks/[root-of-the-server]__6d51cb5d._.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/.next/dev/build/chunks/[turbopack]_runtime.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/.next/dev/build/postcss.js
+    [at Function._resolveFilename (node:internal/modules/cjs/loader:1383:15)]
+    [at defaultResolveImpl (node:internal/modules/cjs/loader:1025:19)]
+    [at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1030:22)]
+    [at Function._load (node:internal/modules/cjs/loader:1192:37)]
+    [at TracingChannel.traceSync (node:diagnostics_channel:328:14)]
+    [at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)]
+    [at Module.require (node:internal/modules/cjs/loader:1463:12)]
+    [at require (node:internal/modules/helpers:147:16)]
+    [at Object.<anonymous> (/Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/sucrase/dist/index.js:5:20)]
+    [at Module._compile (node:internal/modules/cjs/loader:1706:14)]
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+[00:00:33.515] Browser ERROR   ./src/app/globals.css
+Error evaluating Node.js code
+Error: Cannot find module './NameManager'
+Require stack:
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/sucrase/dist/index.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/lib/load-config.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/lib/setupTrackingContext.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/plugin.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/index.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/.next/dev/build/chunks/[root-of-the-server]__6d51cb5d._.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/.next/dev/build/chunks/[turbopack]_runtime.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/.next/dev/build/postcss.js
+    [at Function._resolveFilename (node:internal/modules/cjs/loader:1383:15)]
+    [at defaultResolveImpl (node:internal/modules/cjs/loader:1025:19)]
+    [at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1030:22)]
+    [at Function._load (node:internal/modules/cjs/loader:1192:37)]
+    [at TracingChannel.traceSync (node:diagnostics_channel:328:14)]
+    [at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)]
+    [at Module.require (node:internal/modules/cjs/loader:1463:12)]
+    [at require (node:internal/modules/helpers:147:16)]
+    [at Object.<anonymous> (/Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/sucrase/dist/index.js:5:20)]
+    [at Module._compile (node:internal/modules/cjs/loader:1706:14)]
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+[00:00:35.534] Server  ERROR    ⨯ ./src/app/globals.css
+Error evaluating Node.js code
+Error: Cannot find module './NameManager'
+Require stack:
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/sucrase/dist/index.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/lib/load-config.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/lib/setupTrackingContext.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/plugin.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/index.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/.next/dev/build/chunks/[root-of-the-server]__6d51cb5d._.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/.next/dev/build/chunks/[turbopack]_runtime.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/.next/dev/build/postcss.js
+    [at Function._resolveFilename (node:internal/modules/cjs/loader:1383:15)]
+    [at defaultResolveImpl (node:internal/modules/cjs/loader:1025:19)]
+    [at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1030:22)]
+    [at Function._load (node:internal/modules/cjs/loader:1192:37)]
+    [at TracingChannel.traceSync (node:diagnostics_channel:328:14)]
+    [at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)]
+    [at Module.require (node:internal/modules/cjs/loader:1463:12)]
+    [at require (node:internal/modules/helpers:147:16)]
+    [at Object.<anonymous> (/Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/sucrase/dist/index.js:5:20)]
+    [at Module._compile (node:internal/modules/cjs/loader:1706:14)]
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+
+[00:00:35.692] Browser ERROR   uncaughtError: Error: ./src/app/globals.css
+Error evaluating Node.js code
+Error: Cannot find module './NameManager'
+Require stack:
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/sucrase/dist/index.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/lib/load-config.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/lib/setupTrackingContext.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/plugin.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/index.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/.next/dev/build/chunks/[root-of-the-server]__6d51cb5d._.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/.next/dev/build/chunks/[turbopack]_runtime.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/.next/dev/build/postcss.js
+    [at Function._resolveFilename (node:internal/modules/cjs/loader:1383:15)]
+    [at defaultResolveImpl (node:internal/modules/cjs/loader:1025:19)]
+    [at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1030:22)]
+    [at Function._load (node:internal/modules/cjs/loader:1192:37)]
+    [at TracingChannel.traceSync (node:diagnostics_channel:328:14)]
+    [at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)]
+    [at Module.require (node:internal/modules/cjs/loader:1463:12)]
+    [at require (node:internal/modules/helpers:147:16)]
+    [at Object.<anonymous> (/Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/sucrase/dist/index.js:5:20)]
+    [at Module._compile (node:internal/modules/cjs/loader:1706:14)]
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+
+[00:00:35.882] Browser ERROR   ./src/app/globals.css
+Error evaluating Node.js code
+Error: Cannot find module './NameManager'
+Require stack:
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/sucrase/dist/index.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/lib/load-config.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/lib/setupTrackingContext.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/plugin.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/index.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/.next/dev/build/chunks/[root-of-the-server]__6d51cb5d._.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/.next/dev/build/chunks/[turbopack]_runtime.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/.next/dev/build/postcss.js
+    [at Function._resolveFilename (node:internal/modules/cjs/loader:1383:15)]
+    [at defaultResolveImpl (node:internal/modules/cjs/loader:1025:19)]
+    [at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1030:22)]
+    [at Function._load (node:internal/modules/cjs/loader:1192:37)]
+    [at TracingChannel.traceSync (node:diagnostics_channel:328:14)]
+    [at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)]
+    [at Module.require (node:internal/modules/cjs/loader:1463:12)]
+    [at require (node:internal/modules/helpers:147:16)]
+    [at Object.<anonymous> (/Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/sucrase/dist/index.js:5:20)]
+    [at Module._compile (node:internal/modules/cjs/loader:1706:14)]
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+[00:00:35.882] Browser ERROR   ./src/app/globals.css
+Error evaluating Node.js code
+Error: Cannot find module './NameManager'
+Require stack:
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/sucrase/dist/index.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/lib/load-config.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/lib/setupTrackingContext.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/plugin.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/index.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/.next/dev/build/chunks/[root-of-the-server]__6d51cb5d._.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/.next/dev/build/chunks/[turbopack]_runtime.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/.next/dev/build/postcss.js
+    [at Function._resolveFilename (node:internal/modules/cjs/loader:1383:15)]
+    [at defaultResolveImpl (node:internal/modules/cjs/loader:1025:19)]
+    [at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1030:22)]
+    [at Function._load (node:internal/modules/cjs/loader:1192:37)]
+    [at TracingChannel.traceSync (node:diagnostics_channel:328:14)]
+    [at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)]
+    [at Module.require (node:internal/modules/cjs/loader:1463:12)]
+    [at require (node:internal/modules/helpers:147:16)]
+    [at Object.<anonymous> (/Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/sucrase/dist/index.js:5:20)]
+    [at Module._compile (node:internal/modules/cjs/loader:1706:14)]
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+[00:00:38.475] Server  ERROR    ⨯ ./src/app/globals.css
+Error evaluating Node.js code
+Error: Cannot find module './NameManager'
+Require stack:
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/sucrase/dist/index.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/lib/load-config.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/lib/setupTrackingContext.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/plugin.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/index.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/.next/dev/build/chunks/[root-of-the-server]__6d51cb5d._.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/.next/dev/build/chunks/[turbopack]_runtime.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/.next/dev/build/postcss.js
+    [at Function._resolveFilename (node:internal/modules/cjs/loader:1383:15)]
+    [at defaultResolveImpl (node:internal/modules/cjs/loader:1025:19)]
+    [at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1030:22)]
+    [at Function._load (node:internal/modules/cjs/loader:1192:37)]
+    [at TracingChannel.traceSync (node:diagnostics_channel:328:14)]
+    [at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)]
+    [at Module.require (node:internal/modules/cjs/loader:1463:12)]
+    [at require (node:internal/modules/helpers:147:16)]
+    [at Object.<anonymous> (/Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/sucrase/dist/index.js:5:20)]
+    [at Module._compile (node:internal/modules/cjs/loader:1706:14)]
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+
+[00:00:38.527] Server  ERROR    ⨯ ./src/app/globals.css
+Error evaluating Node.js code
+Error: Cannot find module './NameManager'
+Require stack:
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/sucrase/dist/index.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/lib/load-config.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/lib/setupTrackingContext.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/plugin.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/index.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/.next/dev/build/chunks/[root-of-the-server]__6d51cb5d._.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/.next/dev/build/chunks/[turbopack]_runtime.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/.next/dev/build/postcss.js
+    [at Function._resolveFilename (node:internal/modules/cjs/loader:1383:15)]
+    [at defaultResolveImpl (node:internal/modules/cjs/loader:1025:19)]
+    [at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1030:22)]
+    [at Function._load (node:internal/modules/cjs/loader:1192:37)]
+    [at TracingChannel.traceSync (node:diagnostics_channel:328:14)]
+    [at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)]
+    [at Module.require (node:internal/modules/cjs/loader:1463:12)]
+    [at require (node:internal/modules/helpers:147:16)]
+    [at Object.<anonymous> (/Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/sucrase/dist/index.js:5:20)]
+    [at Module._compile (node:internal/modules/cjs/loader:1706:14)]
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+
+[00:00:38.755] Browser ERROR   uncaughtError: Error: ./src/app/globals.css
+Error evaluating Node.js code
+Error: Cannot find module './NameManager'
+Require stack:
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/sucrase/dist/index.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/lib/load-config.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/lib/setupTrackingContext.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/plugin.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/index.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/.next/dev/build/chunks/[root-of-the-server]__6d51cb5d._.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/.next/dev/build/chunks/[turbopack]_runtime.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/.next/dev/build/postcss.js
+    [at Function._resolveFilename (node:internal/modules/cjs/loader:1383:15)]
+    [at defaultResolveImpl (node:internal/modules/cjs/loader:1025:19)]
+    [at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1030:22)]
+    [at Function._load (node:internal/modules/cjs/loader:1192:37)]
+    [at TracingChannel.traceSync (node:diagnostics_channel:328:14)]
+    [at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)]
+    [at Module.require (node:internal/modules/cjs/loader:1463:12)]
+    [at require (node:internal/modules/helpers:147:16)]
+    [at Object.<anonymous> (/Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/sucrase/dist/index.js:5:20)]
+    [at Module._compile (node:internal/modules/cjs/loader:1706:14)]
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+
+[00:00:38.959] Browser ERROR   ./src/app/globals.css
+Error evaluating Node.js code
+Error: Cannot find module './NameManager'
+Require stack:
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/sucrase/dist/index.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/lib/load-config.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/lib/setupTrackingContext.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/plugin.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/index.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/.next/dev/build/chunks/[root-of-the-server]__6d51cb5d._.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/.next/dev/build/chunks/[turbopack]_runtime.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/.next/dev/build/postcss.js
+    [at Function._resolveFilename (node:internal/modules/cjs/loader:1383:15)]
+    [at defaultResolveImpl (node:internal/modules/cjs/loader:1025:19)]
+    [at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1030:22)]
+    [at Function._load (node:internal/modules/cjs/loader:1192:37)]
+    [at TracingChannel.traceSync (node:diagnostics_channel:328:14)]
+    [at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)]
+    [at Module.require (node:internal/modules/cjs/loader:1463:12)]
+    [at require (node:internal/modules/helpers:147:16)]
+    [at Object.<anonymous> (/Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/sucrase/dist/index.js:5:20)]
+    [at Module._compile (node:internal/modules/cjs/loader:1706:14)]
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+[00:00:38.959] Browser ERROR   ./src/app/globals.css
+Error evaluating Node.js code
+Error: Cannot find module './NameManager'
+Require stack:
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/sucrase/dist/index.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/lib/load-config.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/lib/setupTrackingContext.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/plugin.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/index.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/.next/dev/build/chunks/[root-of-the-server]__6d51cb5d._.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/.next/dev/build/chunks/[turbopack]_runtime.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/.next/dev/build/postcss.js
+    [at Function._resolveFilename (node:internal/modules/cjs/loader:1383:15)]
+    [at defaultResolveImpl (node:internal/modules/cjs/loader:1025:19)]
+    [at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1030:22)]
+    [at Function._load (node:internal/modules/cjs/loader:1192:37)]
+    [at TracingChannel.traceSync (node:diagnostics_channel:328:14)]
+    [at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)]
+    [at Module.require (node:internal/modules/cjs/loader:1463:12)]
+    [at require (node:internal/modules/helpers:147:16)]
+    [at Object.<anonymous> (/Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/sucrase/dist/index.js:5:20)]
+    [at Module._compile (node:internal/modules/cjs/loader:1706:14)]
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+[00:00:38.959] Browser ERROR   ./src/app/globals.css
+Error evaluating Node.js code
+Error: Cannot find module './NameManager'
+Require stack:
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/sucrase/dist/index.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/lib/load-config.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/lib/setupTrackingContext.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/plugin.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/tailwindcss/lib/index.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/.next/dev/build/chunks/[root-of-the-server]__6d51cb5d._.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/.next/dev/build/chunks/[turbopack]_runtime.js
+- /Users/konradkjems/Desktop/Cursor-Projects/better-bets/.next/dev/build/postcss.js
+    [at Function._resolveFilename (node:internal/modules/cjs/loader:1383:15)]
+    [at defaultResolveImpl (node:internal/modules/cjs/loader:1025:19)]
+    [at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1030:22)]
+    [at Function._load (node:internal/modules/cjs/loader:1192:37)]
+    [at TracingChannel.traceSync (node:diagnostics_channel:328:14)]
+    [at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)]
+    [at Module.require (node:internal/modules/cjs/loader:1463:12)]
+    [at require (node:internal/modules/helpers:147:16)]
+    [at Object.<anonymous> (/Users/konradkjems/Desktop/Cursor-Projects/better-bets/node_modules/sucrase/dist/index.js:5:20)]
+    [at Module._compile (node:internal/modules/cjs/loader:1706:14)]
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
