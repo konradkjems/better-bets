@@ -1,6 +1,7 @@
-[00:00:01.132] Server  LOG      ✓ Ready in 864ms
-[00:00:01.460] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:00:01.857] Browser ERROR   uncaughtError: Error: Hydration failed because the server rendered HTML didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+[00:00:03.892] Server  LOG      ✓ Ready in 3.6s
+[00:00:13.382] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:13.605] Browser WARN    Clerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview
+[00:00:13.605] Browser ERROR   uncaughtError: Error: Hydration failed because the server rendered HTML didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
 
 - A server/client branch `if (typeof window !== 'undefined')`.
 - Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
@@ -36,107 +37,14 @@ https://react.dev/link/hydration-mismatch
                       ...
                 ...
 
-[00:00:01.859] Browser LOG     Service Worker registered successfully: {}
-[00:00:01.859] Browser LOG     Service Worker registered successfully: {}
-[00:00:01.859] Browser WARN    Clerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview
-[00:00:03.855] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:00:03.889] Browser ERROR   uncaughtError: Error: Hydration failed because the server rendered HTML didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
-
-- A server/client branch `if (typeof window !== 'undefined')`.
-- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
-- Date formatting in a user's locale which doesn't match the server.
-- External changing data without sending a snapshot of it along with the HTML.
-- Invalid HTML tag nesting.
-
-It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
-
-https://react.dev/link/hydration-mismatch
-
-  ...
-    <SWRConfig value={undefined}>
-      <__experimental_CheckoutProvider value={undefined}>
-        <RouterTelemetry>
-        <ClerkJSScript>
-        <html lang="en">
-          <head>
-          <body className="inter_5972...">
-            <PWAProvider>
-              <div className="min-h-scre...">
-                <Header>
-                  <header className="bg-white s...">
-                    <div className="max-w-7xl ...">
-                      <div className="flex justi...">
-                        <div>
-                        <nav className="hidden md:...">
--                         <a
--                           className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200"
--                           href="/test"
--                         >
-                        ...
-                      ...
-                ...
-
-[00:00:03.889] Browser LOG     Service Worker registered successfully: {}
-[00:00:03.891] Browser LOG     Service Worker registered successfully: {}
-[00:00:03.891] Browser WARN    Clerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview
-[00:00:04.882] Server  LOG      ○ Compiling /_not-found/page ...
-[00:00:06.628] Server  WARN    Error: Failed to find Server Action "7fd704a61a6d5f541e7ba29c4ee1fa686b8cf2b4a0". This request might be from an older or newer deployment.
+[00:00:13.606] Browser LOG     Service Worker registered successfully: {}
+[00:00:13.606] Browser LOG     Service Worker registered successfully: {}
+[00:00:13.703] Server  LOG      ○ Compiling /_not-found/page ...
+[00:00:14.517] Server  WARN    Error: Failed to find Server Action "7fd704a61a6d5f541e7ba29c4ee1fa686b8cf2b4a0". This request might be from an older or newer deployment.
 Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
-[00:00:06.974] Server  WARN    Error: Failed to find Server Action "7fd704a61a6d5f541e7ba29c4ee1fa686b8cf2b4a0". This request might be from an older or newer deployment.
+[00:00:14.722] Server  WARN    Error: Failed to find Server Action "7fd704a61a6d5f541e7ba29c4ee1fa686b8cf2b4a0". This request might be from an older or newer deployment.
 Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
-[00:00:07.340] Browser ERROR   unhandledRejection: UnrecognizedActionError: Server Action "7fd704a61a6d5f541e7ba29c4ee1fa686b8cf2b4a0" was not found on the server. 
+[00:00:14.725] Browser ERROR   unhandledRejection: UnrecognizedActionError: Server Action "7fd704a61a6d5f541e7ba29c4ee1fa686b8cf2b4a0" was not found on the server. 
 Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
-[00:00:08.554] Server  WARN    Error: Failed to find Server Action "7fd704a61a6d5f541e7ba29c4ee1fa686b8cf2b4a0". This request might be from an older or newer deployment.
-Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
-[00:00:08.924] Browser ERROR   unhandledRejection: UnrecognizedActionError: Server Action "7fd704a61a6d5f541e7ba29c4ee1fa686b8cf2b4a0" was not found on the server. 
-Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
-[00:00:19.247] Browser ERROR   uncaughtError: TypeError: Cannot read properties of undefined (reading 'name')
-[00:00:24.234] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:00:24.234] Browser WARN    Clerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview
-[00:00:24.234] Browser ERROR   uncaughtError: Error: Hydration failed because the server rendered text didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
-
-- A server/client branch `if (typeof window !== 'undefined')`.
-- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
-- Date formatting in a user's locale which doesn't match the server.
-- External changing data without sending a snapshot of it along with the HTML.
-- Invalid HTML tag nesting.
-
-It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
-
-https://react.dev/link/hydration-mismatch
-
-  ...
-    <SWRConfig value={undefined}>
-      <__experimental_CheckoutProvider value={undefined}>
-        <RouterTelemetry>
-        <ClerkJSScript>
-        <html lang="en">
-          <head>
-          <body className="inter_5972...">
-            <PWAProvider>
-              <div className="min-h-scre...">
-                <Header>
-                <main>
-                <footer>
-                <PerformanceMonitor>
-                  <div className="fixed bott...">
-                    <div>
-                    <div className="space-y-1">
-                      <div>
-                      <div>
-                      <div>
-                      <div className="flex justi...">
-                        <span>
-                        <span
-+                         className="text-green-400"
--                         className="text-red-400"
-                        >
-+                         unknown
--                         offline
-
-[00:00:24.234] Browser LOG     Service Worker registered successfully: {}
-[00:00:24.234] Browser LOG     Service Worker registered successfully: {}
-[00:00:26.776] Browser ERROR   uncaughtError: TypeError: Cannot read properties of undefined (reading 'name')
-[00:00:27.998] Server  LOG      ○ Compiling /history ...
-[00:00:28.961] Server  WARN    Error: Failed to find Server Action "7fd704a61a6d5f541e7ba29c4ee1fa686b8cf2b4a0". This request might be from an older or newer deployment.
+[00:00:14.825] Browser ERROR   unhandledRejection: UnrecognizedActionError: Server Action "7fd704a61a6d5f541e7ba29c4ee1fa686b8cf2b4a0" was not found on the server. 
 Read more: https://nextjs.org/docs/messages/failed-to-find-server-action
